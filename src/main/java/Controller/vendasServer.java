@@ -71,18 +71,6 @@ public class vendasServer extends HttpServlet {
 
 	}
 	
-	@SuppressWarnings("unused")
-	private double calcularTotal(JSONArray itens) throws NumberFormatException, JSONException {
-	    double total = 0;
-	    if (itens != null) {
-	        for (int i = 0; i < itens.length(); i++) {
-	            JSONObject item = itens.getJSONObject(i);
-	            double subtotal = Double.parseDouble(item.getString("subtotal"));
-	            total += subtotal;
-	        }
-	    }
-	    return total;
-	}
 
 	private void inserirItens(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -103,7 +91,7 @@ public class vendasServer extends HttpServlet {
 			String desProd = itemJson.getString("desProd");
 			String qtdProd = itemJson.getString("qtdProd");
 			String precoProd = itemJson.getString("precoProd");
-			String totalVenda = itemJson.getString("precoProd");
+		
 			
 
 			// Verificando se a quantidade não é nula
@@ -111,14 +99,19 @@ public class vendasServer extends HttpServlet {
 				int qtdPrdo = Integer.parseInt(qtdProd);
 				double preco = Double.parseDouble(precoProd);
 				
+				
 
 				// Calculando o subtotal
 				double subtotalValue = qtdPrdo * preco;
+			         total += subtotalValue ; 
 			
 			
 				request.setAttribute("idProd", idProd);
 				request.setAttribute("desProd", desProd);
 				request.setAttribute("qtdProd", qtdProd);
+				request.setAttribute("totalVenda", total);
+				
+				/*total = (Double) session.getAttribute("totalVenda"); */
 			
 				
 				
@@ -126,8 +119,15 @@ public class vendasServer extends HttpServlet {
 				// Calculando o lucro para este item
 
 				// Construindo a nova linha da tabela HTML
-				String newRow = "<tr>" + "<td>" + idProd + "</td>" + "<td>" + desProd + "</td>" + "<td>" + qtdProd
-						+ "</td>" + "<td>" + precoProd + "</td>" + "<td>" + subtotalValue + "</td>" + "</tr>";
+				String newRow = "<tr>"
+				                 + "<td>" + idProd + "</td>"
+						         + "<td>" + desProd + "</td>"
+				                 + "<td>" + qtdProd + "</td>"
+						         + "<td>" + precoProd + "</td>"
+				                 + "<td>" + subtotalValue + "</td>" 
+						                                      + "</tr>";
+			
+
 
 				JSONObject newItem = new JSONObject();
 				 
@@ -136,8 +136,9 @@ public class vendasServer extends HttpServlet {
 				newItem.put("qtdProd", qtdProd);
 				newItem.put("precoProd", precoProd);
 				newItem.put("subtotal", String.valueOf(subtotalValue));
+				newItem.put("totalVenda", String.valueOf(total));
 				
-				
+				   
 
 				JSONArray itens = (JSONArray) session.getAttribute("itens");
 
@@ -149,19 +150,29 @@ public class vendasServer extends HttpServlet {
 
 				// Atualizar a lista de itens na sessão
 				session.setAttribute("itens", itens);
+				session.setAttribute("totalVenda", total);
 
 				// Escrevendo a nova linha na resposta
+				
 				PrintWriter out = response.getWriter();
 				out.println(newRow);
 				
-				out.close();
-
+			
+				
+			
+		
 				System.out.println("ID do Produto: " + idProd);
 				System.out.println("Descrição do Produto: " + desProd);
 				System.out.println("Quantidade: " + qtdProd);
 				System.out.println("Preço do Produto: " + precoProd);
 				System.out.println("subtotal: " + subtotalValue);
-
+				System.out.println("total: " + total);
+				System.out.println("linha tabela: " + newRow);
+				System.out.println("objeto Json: " + newItem);
+				
+		
+				
+           
 				   
 
 			}
@@ -174,6 +185,7 @@ public class vendasServer extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		
 
 	}
@@ -190,6 +202,8 @@ public class vendasServer extends HttpServlet {
 		ClientesDAO cliDAO = new ClientesDAO();
 
 		try {
+			
+			
 			cli = cliDAO.consultarClientesPorcpf(cpfCli);
 			request.setAttribute("cliId", cli.getId());
 			request.setAttribute("cliNome", cli.getNome());
@@ -208,6 +222,8 @@ public class vendasServer extends HttpServlet {
 		} catch (Exception e) {
 
 		}
+		HttpSession session = request.getSession();
+		session.isNew();
 
 	}
 
