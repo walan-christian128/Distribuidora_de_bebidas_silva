@@ -41,11 +41,13 @@ public class VendasDAO {
             stmt.execute();
 
             stmt.close();
+           
 
-        } catch (Exception erro) {
-          
+        } catch (SQLException erro) {
+        	       
         }
-
+        
+       
     }
     //Retorna a Ultima venda//
 

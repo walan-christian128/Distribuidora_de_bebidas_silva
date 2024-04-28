@@ -10,9 +10,13 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,20 +25,22 @@ import org.json.JSONObject;
 import DAO.ClientesDAO;
 import DAO.ProdutosDAO;
 import DAO.VendasDAO;
+import DAO.itensVendaDAO;
 import Model.Clientes;
+import Model.ItensVenda;
 import Model.Produtos;
 import Model.Vendas;
 
 /**
  * Servlet implementation class vendasServer
  */
-@WebServlet(urlPatterns = { "/selecionarClienteProdutos", "/inserirItens" })
+@WebServlet(urlPatterns = { "/selecionarClienteProdutos", "/inserirItens", "/InseirVendaEintens" })
 
 public class vendasServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	Vendas obj = new Vendas();
-	VendasDAO dao = new VendasDAO();
-	double total;
+	
+	
+	double total, lucro, preco, meuPreco;
 	
 
 	/**
@@ -62,21 +68,118 @@ public class vendasServer extends HttpServlet {
 		} else if (action.equals("/inserirItens")) {
 			inserirItens(request, response);
 
+		} else if (action.equals("/InseirVendaEintens")) {
+
+			inserirVendas(request, response);
+
 		}
+		
 
 		else {
+
+		}
+
+	}
+
+	
+
+	private void inserirVendas(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String idCli = request.getParameter("cliId");
+		int cliId = Integer.parseInt(idCli);
+		
+		
+		Vendas obj = new Vendas();
+
+		if (idCli != null && !idCli.trim().isEmpty()) {
+			try {
+				Clientes objCli = new Clientes();
+				
+				objCli.setId(cliId);
+				obj.setCliente(objCli);
+				
+				obj.setData_venda(request.getParameter("data"));
+				obj.setTotal_venda(Double.parseDouble(request.getParameter("totalVenda")));
+				obj.setObs(request.getParameter("observacao"));
+				obj.setLucro(Double.parseDouble(request.getParameter("lucro")));
+				obj.setDesconto(Double.parseDouble(request.getParameter("desconto")));
+				
+				VendasDAO dao = new VendasDAO();
+				dao.cadastrarVenda(obj);
+				
+				System.out.println("Cliente" + objCli.getId());
+				//// tabela vendas ok///itens sendo inseridos///não mexer
+				
+				
+                obj.setId(dao.retornaUltimaVenda());
+                System.out.println("ID da última venda: " + dao.retornaUltimaVenda());
+				
+               
+                
+                HttpSession session = request.getSession();
+                JSONArray itensArray = (JSONArray) session.getAttribute("itens");
+                     if( itensArray !=null) {
+				for (int i = 0; i < itensArray.length(); i ++) {
+					
+					
+					
+					String idProdVenda = request.getParameter("idProd");
+				    String qtdProd    = request.getParameter("qtdProd");;
+				    String subItens   = request.getParameter("subtotal");;
+				  
+
+					ProdutosDAO dao_produto = new ProdutosDAO();
+					itensVendaDAO daoitem = new itensVendaDAO();
+					Produtos objp = new Produtos();
+					ItensVenda itens = new ItensVenda();
+					
+					itens.setVenda(obj);
+					objp.setId(Integer.parseInt(idProdVenda));
+					itens.setProduto(objp);
+					itens.setQtd(Integer.parseInt(qtdProd));
+					itens.setSubtotal(Double.parseDouble(subItens));
+
+					int qtd_estoque, qtd_comprada, qtd_atualizada;
+					// Baixa no estoque
+					qtd_estoque = dao_produto.retornaEstoqueAtual(objp.getId());
+					qtd_comprada = Integer.parseInt(qtdProd);
+					qtd_atualizada = qtd_estoque - qtd_comprada;
+
+					dao_produto.baixarEstoque(objp.getId(), qtd_atualizada);
+
+					// Cadastrar o item de venda
+					daoitem.cadastraItem(itens);
+					
+					System.out.println("Codigo Produto " + idProdVenda);
+					System.out.println("Quantidade" + qtdProd);
+					System.out.println("Codigo Produto " + subItens);
+
+					// Faça o que precisar com os atributos
+
+				}
+
+				response.sendRedirect("realizarVendas.jsp");
+				
+			  
+                     }	
+				 
+
+			} catch (Exception e) {
+             e.printStackTrace();
+			}
 			
+			
+		
+
 		}
 		
 
 	}
-	
 
 	private void inserirItens(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		
-		
+
 		try {
 			// Lendo os dados enviados pela requisição AJAX
 			BufferedReader reader = request.getReader();
@@ -91,54 +194,43 @@ public class vendasServer extends HttpServlet {
 			String desProd = itemJson.getString("desProd");
 			String qtdProd = itemJson.getString("qtdProd");
 			String precoProd = itemJson.getString("precoProd");
-		
-			
+			String precoMeu = itemJson.getString("compraProd");
 
 			// Verificando se a quantidade não é nula
 			if (qtdProd != null) {
 				int qtdPrdo = Integer.parseInt(qtdProd);
-				double preco = Double.parseDouble(precoProd);
-				
-				
+				preco = Double.parseDouble(precoProd);
+				meuPreco = Double.parseDouble(precoMeu);
 
 				// Calculando o subtotal
 				double subtotalValue = qtdPrdo * preco;
-			         total += subtotalValue ; 
-			
-			
+				total += subtotalValue;
+				lucro += preco - meuPreco;
+
 				request.setAttribute("idProd", idProd);
 				request.setAttribute("desProd", desProd);
 				request.setAttribute("qtdProd", qtdProd);
+				request.setAttribute("subtotal", subtotalValue);
 				request.setAttribute("totalVenda", total);
-				
-				/*total = (Double) session.getAttribute("totalVenda"); */
-			
-				
-				
+				request.setAttribute("lucro", lucro);
+
+				/* total = (Double) session.getAttribute("totalVenda"); */
 
 				// Calculando o lucro para este item
 
 				// Construindo a nova linha da tabela HTML
-				String newRow = "<tr>"
-				                 + "<td>" + idProd + "</td>"
-						         + "<td>" + desProd + "</td>"
-				                 + "<td>" + qtdProd + "</td>"
-						         + "<td>" + precoProd + "</td>"
-				                 + "<td>" + subtotalValue + "</td>" 
-						                                      + "</tr>";
-			
-
+				String newRow = "<tr>" + "<td>" + idProd + "</td>" + "<td>" + desProd + "</td>" + "<td>" + qtdProd
+						+ "</td>" + "<td>" + precoProd + "</td>" + "<td>" + subtotalValue + "</td>" + "</tr>";
 
 				JSONObject newItem = new JSONObject();
-				 
+
 				newItem.put("idProd", idProd);
 				newItem.put("desProd", desProd);
 				newItem.put("qtdProd", qtdProd);
 				newItem.put("precoProd", precoProd);
 				newItem.put("subtotal", String.valueOf(subtotalValue));
 				newItem.put("totalVenda", String.valueOf(total));
-				
-				   
+				newItem.put("compraProd", String.valueOf(lucro));
 
 				JSONArray itens = (JSONArray) session.getAttribute("itens");
 
@@ -151,42 +243,18 @@ public class vendasServer extends HttpServlet {
 				// Atualizar a lista de itens na sessão
 				session.setAttribute("itens", itens);
 				session.setAttribute("totalVenda", total);
+				session.setAttribute("lucro", lucro);
 
 				// Escrevendo a nova linha na resposta
-				
+
 				PrintWriter out = response.getWriter();
 				out.println(newRow);
-				
-			
-				
-			
-		
-				System.out.println("ID do Produto: " + idProd);
-				System.out.println("Descrição do Produto: " + desProd);
-				System.out.println("Quantidade: " + qtdProd);
-				System.out.println("Preço do Produto: " + precoProd);
-				System.out.println("subtotal: " + subtotalValue);
-				System.out.println("total: " + total);
-				System.out.println("linha tabela: " + newRow);
-				System.out.println("objeto Json: " + newItem);
-				
-		
-				
-           
-				   
 
 			}
-			
-			
-			
-
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
 
 	}
 
@@ -202,8 +270,7 @@ public class vendasServer extends HttpServlet {
 		ClientesDAO cliDAO = new ClientesDAO();
 
 		try {
-			
-			
+
 			cli = cliDAO.consultarClientesPorcpf(cpfCli);
 			request.setAttribute("cliId", cli.getId());
 			request.setAttribute("cliNome", cli.getNome());
@@ -233,7 +300,7 @@ public class vendasServer extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		doGet(request, response);
 	}
 

@@ -4,6 +4,7 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.List"%>
+<%@ page import="java.util.Map"%>
 <%@ page import="Model.Clientes"%>
 <%@ page import="Model.Produtos"%>
 <%@ page import="DAO.ClientesDAO"%>
@@ -15,6 +16,11 @@ SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); // E
 String dataAtualFormatada = formatoData.format(dataAtual);
 %>
 <%
+Date agora = new Date();
+SimpleDateFormat dataEUA = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+String datamysql = dataEUA.format(agora);
+%>
+<%
 Clientes clientes = new Clientes();
 %>
 <%
@@ -23,7 +29,8 @@ Produtos produtos = new Produtos();
 <html lang="pt-BR">
 <head>
 <title>Venda</title>
- <link rel="icon" href="img/2992664_cart_dollar_mobile_shopping_smartphone_icon.png">
+<link rel="icon"
+	href="img/2992664_cart_dollar_mobile_shopping_smartphone_icon.png">
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 	rel="stylesheet"
@@ -117,11 +124,14 @@ Produtos produtos = new Produtos();
 							</div>
 						</div>
 						<div class="col-md-6">
+
+
 							<label for="compraProd" class="form-label">Meu Preço:</label> <input
 								type="text" class="form-control" id="compraProd"
 								name="compraProd" required
 								value="<%=request.getAttribute("compraProd") != null ? request.getAttribute("compraProd").toString() : ""%>"
 								readonly>
+
 						</div>
 						<div class="d-flex justify-content-between">
 							<input class="btn btn-primary mt-3" type="submit"
@@ -145,7 +155,7 @@ Produtos produtos = new Produtos();
 
 
 
-				<form action="inserirItens">
+				<form action="inserirItens" method="post" name="carrinho">
 					<h2 class="d-flex justify-content-center">Itens Da Venda</h2>
 					<div>
 						<table class="table table-dark table-hover" id="carrinho">
@@ -205,23 +215,27 @@ Produtos produtos = new Produtos();
 
 			<div class=" col-md-3">
 				<label class="form-label">lucro:</label> <input type="text"
-					id="lucro" class="form-control" name="lucro" value="">
+					id="lucro" class="form-control" name="lucro"
+					value="<%=session.getAttribute("lucro") != null ? session.getAttribute("lucro").toString() : "0.00"%>">
 			</div>
 			<div class=" col-md-3">
 				<label class="form-label">Desconto:</label> <input type="text"
-					class="form-control" name="desconto" value="0.00">
+					class="form-control" name="desconto"
+					value="<%=request.getAttribute("desconto") != null ? request.getAttribute("desconto").toString() : "0.00"%>"
+					id="desconto">
 			</div>
 			<div>
 				<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 					data-bs-target="#confirmacaoModal">Pagamento</button>
-				<input type="button" class="btn btn-danger" value="Desconto">
-				<a type="button" class="btn btn-warning" href="#"
-					data-bs-toggle="modal" data-bs-target="#CancelarVenda">Cancelar
+
+				<input type="button" class="btn btn-danger" value="Desconto"
+					id="descontoBtn"> <a type="button" class="btn btn-warning"
+					href="#" data-bs-toggle="modal" data-bs-target="#CancelarVenda">Cancelar
 					Venda</a>
 			</div>
 
 		</div>
-		<form action="InseirVendaEintens" id="modalVendas">
+		<form action="InseirVendaEintens" id="modalVendas" method="get">
 			<div class="modal fade" tabindex="-1" id="confirmacaoModal">
 				<div class="modal-dialog">
 					<div class="modal-content">
@@ -245,7 +259,9 @@ Produtos produtos = new Produtos();
 								</select>
 								<div class=" col-md-3">
 									<label class="form-label">Valor: </label> <input type="text"
-										class="form-control ml-1" id="pegardoTotal">
+										class="form-control ml-1" id="pegardoTotal"
+										value="<%=session.getAttribute("totalVenda")%>"
+										name="totalVenda">
 
 								</div>
 								<div class="col-md-3" id="dinheiroRecebidoDiv">
@@ -263,7 +279,8 @@ Produtos produtos = new Produtos();
 
 								<div class="col-md-6" id="observacaoDiv">
 									<label class="form-label"> Observação: </label> <input
-										type="text" class="form-control" id="observacao">
+										type="text" class="form-control" id="observacao"
+										name="observacao">
 
 
 								</div>
@@ -281,6 +298,32 @@ Produtos produtos = new Produtos();
 					</div>
 				</div>
 			</div>
+			<input type="hidden" name="cliId"
+				value="<%=request.getAttribute("cliId")%>"> <input
+				type="hidden" name="data" value="<%=datamysql%>"> <input
+				type="hidden" name="lucro"
+				value="<%=session.getAttribute("lucro")%>"> <input
+				type="hidden" class="form-control" name="desconto"
+				value="<%=request.getAttribute("desconto") != null ? request.getAttribute("desconto").toString() : "0.00"%>"
+				id="desconto">
+			<%
+			HttpSession session_3 = request.getSession();
+			JSONArray itensArray_3 = (JSONArray) session.getAttribute("itens");
+			if (itensArray_3 != null) {
+				for (int i = 0; i < itensArray_3.length(); i++) {
+					JSONObject itemJson_3 = itensArray_3.getJSONObject(i);
+			%>
+			<input type="hidden" name="idProd" id="idProd"
+				value="<%=itemJson_3.getString("idProd")%>"> <input
+				type="hidden" name="qtdProd" id="qtdProd"
+				value="<%=itemJson_3.getString("qtdProd")%>"> <input
+				type="hidden" name="subtotal" id="subtotal"
+				value="<%=itemJson_3.getString("subtotal")%>">
+			<%
+			}
+			}
+			%>
+
 		</form>
 
 		<div class="modal fade" tabindex="-1" id="CancelarVenda">
@@ -333,6 +376,9 @@ Produtos produtos = new Produtos();
 									.getElementById("precoProd").value;
 							var meuPreco = document
 									.getElementById("compraProd").value;
+							var desconto = document
+							.getElementById("desconto").value;
+							
 
 							// Verificar se os campos de entrada não estão vazios
 							if (idProd && desProd && qtdProd && precoProd
@@ -344,7 +390,7 @@ Produtos produtos = new Produtos();
 
 								// Verificar se os valores são números válidos
 								if (!isNaN(quantidade) && !isNaN(preco)
-										&& !isNaN(precoCompra)) {
+										&& !isNaN(precoCompra) && !isNaN(desconto)) {
 									// Calcular o subtotal
 									var subtotalValue = quantidade * preco;
 									var lucroUnitario = preco - precoCompra; // Calcular o lucro unitário
@@ -357,7 +403,9 @@ Produtos produtos = new Produtos();
 										desProd : desProd,
 										qtdProd : qtdProd,
 										precoProd : precoProd,
-										subtotal : subtotalValue
+										compraProd: meuPreco,
+										subtotal : subtotalValue,
+										desconto : desconto
 									};
 
 									// Enviar os dados para o Servlet usando AJAX
@@ -509,12 +557,58 @@ Produtos produtos = new Produtos();
 						if (xhr.readyState === 4 && xhr.status === 200) {
 							// A requisição foi bem-sucedida, você pode executar ações adicionais aqui se necessário
 							console.log("Sessão atualizada com sucesso!");
-					
+
 						}
 					};
 					xhr.send();
 				});
 	</script>
+	<script>
+	document.getElementById("descontoBtn").addEventListener("click", function() {
+	    var desconto = parseFloat(document.getElementById("desconto").value);
+	    var totalValue = parseFloat(document.getElementById("totalVenda").value);
+	    
+	    if (!isNaN(desconto)) {
+	        totalValue -= desconto;
+	        document.getElementById("totalVenda").value = totalValue.toFixed(2);
+	    } else {
+	        alert("Por favor, insira um valor válido para o desconto.");
+	    }
+	});
+
+	
+	</script>
+	<script>
+     document.getElementById("desconto").addEventListener("input", function() {
+     document.getElementById("vdesconto").value = this.value;
+});
+     document.getElementById("totalVenda").addEventListener("input", function() {
+         document.getElementById("pegardoTotal").value = this.value;
+    });
+</script>
+	<script>
+document.getElementById("carrinho").addEventListener("click", function(event) {
+    var row = event.target.parentNode.parentNode;
+    var idProd = row.cells[0].innerText;
+ 
+    var qtdProd = row.cells[2].innerText;
+    
+    var subtotal = row.cells[4].innerText;
+
+    document.getElementById("idProd").value = idProd;
+   
+    document.getElementById("qtdProd").value = qtdProd;
+   
+    document.getElementById("subtotal").value = subtotal;
+
+    // Adicione este trecho para enviar os valores qtdProd e subtotal para o servidor
+    document.getElementById("qtdProdHidden").value = qtdProd;
+    document.getElementById("subtotalHidden").value = subtotal;
+});
+
+});
+
+</script>
 
 
 
