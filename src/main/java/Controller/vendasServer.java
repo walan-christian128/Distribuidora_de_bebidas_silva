@@ -1,5 +1,6 @@
 package Controller;
 
+import jakarta.security.auth.message.callback.PrivateKeyCallback.Request;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -40,7 +41,7 @@ public class vendasServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	double total, lucro, preco, meuPreco;
+	double total,subtotal, lucro, preco, meuPreco;
 	
 
 	/**
@@ -85,6 +86,7 @@ public class vendasServer extends HttpServlet {
 
 	private void inserirVendas(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		 HttpSession session = request.getSession();
 		String idCli = request.getParameter("cliId");
 		int cliId = Integer.parseInt(idCli);
 		
@@ -103,30 +105,33 @@ public class vendasServer extends HttpServlet {
 				obj.setObs(request.getParameter("observacao"));
 				obj.setLucro(Double.parseDouble(request.getParameter("lucro")));
 				obj.setDesconto(Double.parseDouble(request.getParameter("desconto")));
+				obj.setFormaPagamento(request.getParameter("formaPagamento"));
 				
 				VendasDAO dao = new VendasDAO();
 				dao.cadastrarVenda(obj);
 				
-				System.out.println("Cliente" + objCli.getId());
+				/*System.out.println("Cliente" + objCli.getId());*/
 				//// tabela vendas ok///itens sendo inseridos///não mexer
 				
 				
                 obj.setId(dao.retornaUltimaVenda());
-                System.out.println("ID da última venda: " + dao.retornaUltimaVenda());
+                /*System.out.println("ID da última venda: " + dao.retornaUltimaVenda());*/
 				
                
                 
-                HttpSession session = request.getSession();
+               
                 JSONArray itensArray = (JSONArray) session.getAttribute("itens");
                      if( itensArray !=null) {
 				for (int i = 0; i < itensArray.length(); i ++) {
 					
-					
+					total = 0.0;
+					lucro = 0.0;
 					
 					String idProdVenda = request.getParameter("idProd");
-				    String qtdProd    = request.getParameter("qtdProd");;
-				    String subItens   = request.getParameter("subtotal");;
-				  
+				    String qtdProd    = request.getParameter("qtdProd");
+				    String subItens   = request.getParameter("subtotal");
+				    
+				    
 
 					ProdutosDAO dao_produto = new ProdutosDAO();
 					itensVendaDAO daoitem = new itensVendaDAO();
@@ -150,15 +155,29 @@ public class vendasServer extends HttpServlet {
 					// Cadastrar o item de venda
 					daoitem.cadastraItem(itens);
 					
-					System.out.println("Codigo Produto " + idProdVenda);
+					/*System.out.println("Codigo Produto " + idProdVenda);
 					System.out.println("Quantidade" + qtdProd);
-					System.out.println("Codigo Produto " + subItens);
+					System.out.println("Codigo Produto " + subItens);*/
+					
+					/*System.out.println("Total: " + total);*/
 
 					// Faça o que precisar com os atributos
 
 				}
+				
+				total = 0.0;
+				lucro = 0.0;
+				session.removeAttribute("totalVenda");
+				
+				session.removeAttribute("itens");
+				session.removeAttribute("lucro");
+				
+				
 
 				response.sendRedirect("realizarVendas.jsp");
+				
+				
+				
 				
 			  
                      }	
@@ -170,7 +189,8 @@ public class vendasServer extends HttpServlet {
 			
 			
 		
-
+			HttpSession newSession = request.getSession(true);
+			newSession.removeAttribute("totalVenda");
 		}
 		
 
@@ -203,14 +223,14 @@ public class vendasServer extends HttpServlet {
 				meuPreco = Double.parseDouble(precoMeu);
 
 				// Calculando o subtotal
-				double subtotalValue = qtdPrdo * preco;
-				total += subtotalValue;
+				subtotal = qtdPrdo * preco;
+				total += subtotal;
 				lucro += preco - meuPreco;
 
 				request.setAttribute("idProd", idProd);
 				request.setAttribute("desProd", desProd);
 				request.setAttribute("qtdProd", qtdProd);
-				request.setAttribute("subtotal", subtotalValue);
+				request.setAttribute("subtotal", subtotal);
 				request.setAttribute("totalVenda", total);
 				request.setAttribute("lucro", lucro);
 
@@ -220,7 +240,7 @@ public class vendasServer extends HttpServlet {
 
 				// Construindo a nova linha da tabela HTML
 				String newRow = "<tr>" + "<td>" + idProd + "</td>" + "<td>" + desProd + "</td>" + "<td>" + qtdProd
-						+ "</td>" + "<td>" + precoProd + "</td>" + "<td>" + subtotalValue + "</td>" + "</tr>";
+						+ "</td>" + "<td>" + precoProd + "</td>" + "<td>" + subtotal + "</td>" + "</tr>";
 
 				JSONObject newItem = new JSONObject();
 
@@ -228,7 +248,7 @@ public class vendasServer extends HttpServlet {
 				newItem.put("desProd", desProd);
 				newItem.put("qtdProd", qtdProd);
 				newItem.put("precoProd", precoProd);
-				newItem.put("subtotal", String.valueOf(subtotalValue));
+				newItem.put("subtotal", String.valueOf(subtotal));
 				newItem.put("totalVenda", String.valueOf(total));
 				newItem.put("compraProd", String.valueOf(lucro));
 
@@ -249,12 +269,14 @@ public class vendasServer extends HttpServlet {
 
 				PrintWriter out = response.getWriter();
 				out.println(newRow);
+				
 
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 
 	}
 
@@ -303,5 +325,16 @@ public class vendasServer extends HttpServlet {
 
 		doGet(request, response);
 	}
+	protected void Vendas(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		VendasDAO  dao = new VendasDAO();
+		
+        ArrayList<Vendas> lista = (ArrayList<Model.Vendas>) dao.listarVendasdoDia();
+        request.setAttribute("Vendas", lista);
+        RequestDispatcher rd = request.getRequestDispatcher("Home.jsp");
+        rd.forward(request, response);
+		
+	}
+	
 
 }

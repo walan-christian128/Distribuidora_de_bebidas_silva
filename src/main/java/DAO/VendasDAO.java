@@ -9,10 +9,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
+import java.util.Date;
 import java.util.List;
 
 public class VendasDAO {
@@ -28,7 +29,7 @@ public class VendasDAO {
     public void cadastrarVenda(Vendas obj) {
         try {
 
-            String sql = "insert into tb_vendas(cliente_id,data_venda,total_venda,lucro,observacoes,desconto)values(?,?,?,?,?,?)";
+            String sql = "insert into tb_vendas(cliente_id,data_venda,total_venda,lucro,observacoes,desconto,forma_pagamento)values(?,?,?,?,?,?,?)";
             PreparedStatement stmt = con.prepareStatement(sql);
 
             stmt.setInt(1, obj.getCliente().getId());
@@ -37,6 +38,7 @@ public class VendasDAO {
             stmt.setDouble(4, obj.getLucro());
             stmt.setString(5, obj.getObs());
             stmt.setDouble(6, obj.getDesconto());
+            stmt.setString(7, obj.getformaPagamento());
 
             stmt.execute();
 
@@ -106,6 +108,7 @@ public class VendasDAO {
                 obj.setCliente(c);
 
                 lista.add(obj);
+              
 
             }
 
@@ -124,19 +127,18 @@ public class VendasDAO {
             List<Vendas> lista = new ArrayList<>();
 
             // Obter a data atual do servidor
-            LocalDate dataAtual = LocalDate.now();
-            
-            // Converter a data atual para o formato de String desejado
-            String dataAtualFormatada = dataAtual.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            Date agora = new Date();
+            SimpleDateFormat dataEUA = new SimpleDateFormat("yyyy-MM-dd");
+            String datamysql = dataEUA.format(agora);
 
-            String sql = "select v.id,date_format(v.data_venda,'%d/%m/%Y') as data_formatada,c.nome,v.total_venda,v.observacoes,v.lucro,v.desconto from tb_vendas as v "
-                    + "inner join tb_clientes as c on (v.cliente_id = c.id) where v.data_venda = ?";
+            String sql = "select v.id,date_format(v.data_venda,'%d/%m/%Y %H:%i:%s') as data_formatada,c.nome,v.total_venda,v.observacoes,v.lucro,v.desconto,v.forma_pagamento from tb_vendas as v "
+                    + "inner join tb_clientes as c on (v.cliente_id = c.id) where date(data_venda) = ?";
 
             PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, dataAtualFormatada);
+            stmt.setString(1, datamysql);
 
             ResultSet rs = stmt.executeQuery();
-
+     
             while (rs.next()) {
                 Vendas obj = new Vendas();
                 Clientes c = new Clientes();
@@ -148,14 +150,16 @@ public class VendasDAO {
                 obj.setObs(rs.getString("v.observacoes"));
                 obj.setLucro(rs.getDouble("v.lucro"));
                 obj.setDesconto(rs.getDouble("v.desconto"));
+                obj.setFormaPagamento(rs.getString("v.forma_pagamento"));
 
                 obj.setCliente(c);
 
                 lista.add(obj);
+                
             }
 
             return lista;
-
+          
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -250,7 +254,7 @@ public class VendasDAO {
     	          prod.setPreco_de_venda(rs.getDouble("prod.preco_de_venda"));
     	          prod.setPreco_de_compra(rs.getDouble("pro.preco_de_compra"));
     	           
-    	          System.out.println("sql" + sql);
+    	   
     	        
     	
     	    		

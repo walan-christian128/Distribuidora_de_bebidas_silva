@@ -50,8 +50,8 @@ listaVenda = Vdao.listarVendasdoDia();
    <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div id="table-container" class="container-sm">
-                <table id="tabela" class="table table-info table-bordered table-hover">
+            <div id="table-container" class="container-sm ">
+                <table id="tabela" class="table table-info table-bordered table-hover overflow-visible">
                     <!-- cabeçalho da tabela -->
                     <thead>
                         <tr>

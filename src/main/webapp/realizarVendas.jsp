@@ -149,16 +149,16 @@ Produtos produtos = new Produtos();
 
 		</div>
 
-		<div class="row col-md-5">
+		<div class="row col-md-5 p-3 mb-2 bg-dark text-white ">
 
-			<div class="p-3  bg-light">
+			<div class="p-3 bg-dark">
 
 
 
 				<form action="inserirItens" method="post" name="carrinho">
 					<h2 class="d-flex justify-content-center">Itens Da Venda</h2>
 					<div>
-						<table class="table table-dark table-hover" id="carrinho">
+						<table class="table table-danger" id="carrinho">
 							<thead>
 								<tr>
 									<th>Codigo</th>
@@ -271,9 +271,9 @@ Produtos produtos = new Produtos();
 								</div>
 								<div class="col-md-3" id="trocoDiv">
 									<label class="form-label"> Troco: </label> <input type="text"
-										class="form-control" id="trocoVenda"> <input
+										class="form-control" id="trocoVenda" value="0.00"> <input
 										type="button" class="btn btn-success" value="Confimar Troco"
-										style="margin-top: 10px;">
+										style="margin-top: 10px;" id="btn-troco">
 
 								</div>
 
@@ -459,28 +459,9 @@ Produtos produtos = new Produtos();
 						});
 
 		// Função para calcular o total da venda e o lucro
-		function updateTotal(subtotalValue, lucroCalculo) {
-			var totalValue = parseFloat(document.getElementById("totalVenda").value);
-			var lucroValue = parseFloat(document.getElementById("lucro").value);
-
-			totalValue += subtotalValue; // Adicionar o subtotal ao total
-			lucroValue += lucroCalculo; // Adicionar o lucro ao total de lucro
-
-			document.getElementById("totalVenda").value = totalValue.toFixed(2);
-			document.getElementById("lucro").value = lucroValue.toFixed(2); // Exibir o lucro com duas casas decimais
-		}
-
+	
 		// Função para calcular o total da venda e o lucro
-		function updateTotal(subtotalValue, lucroCalculo) {
-			var totalValue = parseFloat(document.getElementById("totalVenda").value);
-			var lucroValue = parseFloat(document.getElementById("lucro").value);
-
-			totalValue += subtotalValue; // Adicionar o subtotal ao total
-			lucroValue += lucroCalculo; // Adicionar o lucro ao total de lucro
-
-			document.getElementById("totalVenda").value = totalValue.toFixed(2);
-			document.getElementById("lucro").value = lucroValue.toFixed(2); // Exibir o lucro com duas casas decimais
-		}
+		
 
 		// Função para calcular o total da venda e o lucro
 		function updateTotal(subtotalValue, lucroCalculo) {
@@ -575,7 +556,7 @@ Produtos produtos = new Produtos();
 	        alert("Por favor, insira um valor válido para o desconto.");
 	    }
 	});
-
+	
 	
 	</script>
 	<script>
@@ -608,6 +589,19 @@ document.getElementById("carrinho").addEventListener("click", function(event) {
 
 });
 
+</script>
+<script>
+    document.getElementById("btn-troco").addEventListener("click", function() {
+        var pegarTotal = parseFloat(document.getElementById("pegardoTotal").value);
+        var dinheiroRecebido = parseFloat(document.getElementById("dinheiroRecebido").value);
+        
+        if (!isNaN(pegarTotal) && !isNaN(dinheiroRecebido)) {
+            var troco = dinheiroRecebido - pegarTotal;
+            document.getElementById("trocoVenda").value = troco.toFixed(2);
+        } else {
+            alert("Por favor, insira valores válidos.");
+        }
+    });
 </script>
 
 
