@@ -13,7 +13,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +26,8 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.gson.Gson;
 
 import DAO.ClientesDAO;
 import DAO.ProdutosDAO;
@@ -35,14 +41,14 @@ import Model.Vendas;
 /**
  * Servlet implementation class vendasServer
  */
-@WebServlet(urlPatterns = { "/selecionarClienteProdutos", "/inserirItens", "/InseirVendaEintens" })
+
+@WebServlet(urlPatterns = { "/selecionarClienteProdutos", "/inserirItens", "/InseirVendaEintens", "/PeriodoVenda",
+		"/dia" })
 
 public class vendasServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	
-	double total,subtotal, lucro, preco, meuPreco;
-	
+
+	double total, subtotal, lucro, preco, meuPreco;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -73,8 +79,15 @@ public class vendasServer extends HttpServlet {
 
 			inserirVendas(request, response);
 
+		} else if (action.equals("/PeriodoVenda")) {
+
+			vendaPorPeriodo(request, response);
+
+		} else if (action.equals("/dia")) {
+
+			vendaPorDia(request, response);
+
 		}
-		
 
 		else {
 
@@ -82,117 +95,149 @@ public class vendasServer extends HttpServlet {
 
 	}
 
-	
+	private void vendaPorDia(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String data = request.getParameter("data");
+        try {
+            SimpleDateFormat dataVenda = new SimpleDateFormat("dd/MM/yyyy");
+            Date dataVendaInf = dataVenda.parse(data);
+
+            VendasDAO dao = new VendasDAO();
+            double totalVenda = dao.retornaTotalVendaPorData(dataVendaInf);
+
+            request.setAttribute("totalVenda", totalVenda);
+            request.setAttribute("data", data);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
+            dispatcher.forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle exception appropriately
+        }
+    
+	}
+
+	private void vendaPorPeriodo(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String dataInicial = request.getParameter("dataInicial");
+		String dataFinal = request.getParameter("dataFinal");
+
+		if (dataInicial != null && dataFinal != null) {
+			String fomatoData = "dd/MM/yyyy";
+			SimpleDateFormat sdf = new SimpleDateFormat(fomatoData);
+
+			try {
+				Date datainicalFormata = sdf.parse(dataInicial);
+				Date datafinalFormata = sdf.parse(dataFinal);
+				VendasDAO dao = new VendasDAO();
+				ArrayList<Vendas> lista_2 = (ArrayList<Vendas>) dao.totalPorPeriodo(datainicalFormata,
+						datafinalFormata);
+				request.setAttribute("periodo", lista_2);
+				RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
+				dispatcher.forward(request, response);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				
+			}
+		}
+	}
 
 	private void inserirVendas(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		 HttpSession session = request.getSession();
+		HttpSession session = request.getSession();
 		String idCli = request.getParameter("cliId");
 		int cliId = Integer.parseInt(idCli);
-		
-		
+
 		Vendas obj = new Vendas();
 
 		if (idCli != null && !idCli.trim().isEmpty()) {
 			try {
 				Clientes objCli = new Clientes();
-				
+
 				objCli.setId(cliId);
 				obj.setCliente(objCli);
-				
+
 				obj.setData_venda(request.getParameter("data"));
 				obj.setTotal_venda(Double.parseDouble(request.getParameter("totalVenda")));
 				obj.setObs(request.getParameter("observacao"));
 				obj.setLucro(Double.parseDouble(request.getParameter("lucro")));
 				obj.setDesconto(Double.parseDouble(request.getParameter("desconto")));
 				obj.setFormaPagamento(request.getParameter("formaPagamento"));
-				
+
 				VendasDAO dao = new VendasDAO();
 				dao.cadastrarVenda(obj);
-				
-				/*System.out.println("Cliente" + objCli.getId());*/
+
+				/* System.out.println("Cliente" + objCli.getId()); */
 				//// tabela vendas ok///itens sendo inseridos///não mexer
-				
-				
-                obj.setId(dao.retornaUltimaVenda());
-                /*System.out.println("ID da última venda: " + dao.retornaUltimaVenda());*/
-				
-               
-                
-               
-                JSONArray itensArray = (JSONArray) session.getAttribute("itens");
-                     if( itensArray !=null) {
-				for (int i = 0; i < itensArray.length(); i ++) {
-					
+
+				obj.setId(dao.retornaUltimaVenda());
+				/* System.out.println("ID da última venda: " + dao.retornaUltimaVenda()); */
+
+				JSONArray itensArray = (JSONArray) session.getAttribute("itens");
+				if (itensArray != null) {
+					for (int i = 0; i < itensArray.length(); i++) {
+						JSONObject linha = itensArray.getJSONObject(i);
+
+						total = 0.0;
+						lucro = 0.0;
+
+						String idProdVenda = linha.getString("idProd");
+						String qtdProd = linha.getString("qtdProd");
+						String subItens = linha.getString("subtotal");
+
+						ProdutosDAO dao_produto = new ProdutosDAO();
+						itensVendaDAO daoitem = new itensVendaDAO();
+						Produtos objp = new Produtos();
+						ItensVenda itens = new ItensVenda();
+
+						itens.setVenda(obj);
+						objp.setId(Integer.parseInt(idProdVenda));
+						itens.setProduto(objp);
+						itens.setQtd(Integer.parseInt(qtdProd));
+						itens.setSubtotal(Double.parseDouble(subItens));
+
+						int qtd_estoque, qtd_comprada, qtd_atualizada;
+						// Baixa no estoque
+						qtd_estoque = dao_produto.retornaEstoqueAtual(objp.getId());
+						qtd_comprada = Integer.parseInt(qtdProd);
+						qtd_atualizada = qtd_estoque - qtd_comprada;
+
+						dao_produto.baixarEstoque(objp.getId(), qtd_atualizada);
+
+						// Cadastrar o item de venda
+						daoitem.cadastraItem(itens);
+
+						/*
+						 * System.out.println("Codigo Produto " + idProdVenda);
+						 * System.out.println("Quantidade" + qtdProd);
+						 * System.out.println("Codigo Produto " + subItens);
+						 */
+
+						/* System.out.println("Total: " + total); */
+
+						// Faça o que precisar com os atributos
+
+					}
+
 					total = 0.0;
 					lucro = 0.0;
-					
-					String idProdVenda = request.getParameter("idProd");
-				    String qtdProd    = request.getParameter("qtdProd");
-				    String subItens   = request.getParameter("subtotal");
-				    
-				    
+					session.removeAttribute("totalVenda");
 
-					ProdutosDAO dao_produto = new ProdutosDAO();
-					itensVendaDAO daoitem = new itensVendaDAO();
-					Produtos objp = new Produtos();
-					ItensVenda itens = new ItensVenda();
-					
-					itens.setVenda(obj);
-					objp.setId(Integer.parseInt(idProdVenda));
-					itens.setProduto(objp);
-					itens.setQtd(Integer.parseInt(qtdProd));
-					itens.setSubtotal(Double.parseDouble(subItens));
+					session.removeAttribute("itens");
+					session.removeAttribute("lucro");
 
-					int qtd_estoque, qtd_comprada, qtd_atualizada;
-					// Baixa no estoque
-					qtd_estoque = dao_produto.retornaEstoqueAtual(objp.getId());
-					qtd_comprada = Integer.parseInt(qtdProd);
-					qtd_atualizada = qtd_estoque - qtd_comprada;
-
-					dao_produto.baixarEstoque(objp.getId(), qtd_atualizada);
-
-					// Cadastrar o item de venda
-					daoitem.cadastraItem(itens);
-					
-					/*System.out.println("Codigo Produto " + idProdVenda);
-					System.out.println("Quantidade" + qtdProd);
-					System.out.println("Codigo Produto " + subItens);*/
-					
-					/*System.out.println("Total: " + total);*/
-
-					// Faça o que precisar com os atributos
+					response.sendRedirect("realizarVendas.jsp");
 
 				}
-				
-				total = 0.0;
-				lucro = 0.0;
-				session.removeAttribute("totalVenda");
-				
-				session.removeAttribute("itens");
-				session.removeAttribute("lucro");
-				
-				
-
-				response.sendRedirect("realizarVendas.jsp");
-				
-				
-				
-				
-			  
-                     }	
-				 
 
 			} catch (Exception e) {
-             e.printStackTrace();
+				e.printStackTrace();
 			}
-			
-			
-		
+
 			HttpSession newSession = request.getSession(true);
 			newSession.removeAttribute("totalVenda");
 		}
-		
 
 	}
 
@@ -269,14 +314,12 @@ public class vendasServer extends HttpServlet {
 
 				PrintWriter out = response.getWriter();
 				out.println(newRow);
-				
 
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -325,16 +368,5 @@ public class vendasServer extends HttpServlet {
 
 		doGet(request, response);
 	}
-	protected void Vendas(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		VendasDAO  dao = new VendasDAO();
-		
-        ArrayList<Vendas> lista = (ArrayList<Model.Vendas>) dao.listarVendasdoDia();
-        request.setAttribute("Vendas", lista);
-        RequestDispatcher rd = request.getRequestDispatcher("Home.jsp");
-        rd.forward(request, response);
-		
-	}
-	
 
 }

@@ -17,9 +17,9 @@ Clientes obj = new Clientes();
 
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clientes</title>
 <link rel="icon"
@@ -279,17 +279,12 @@ td a {
 				aria-labelledby="exampleModalLabel" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered"></div>
 			</div>
-			<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-			<script
-				src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-			<script
-				src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-			<script
-				src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
-			<script
-				src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
-			<script
-				src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
 				<script>
     $(document).ready(function(){
         // Event delegation para a tabela toda
@@ -310,6 +305,49 @@ td a {
             $('#exampleModal').modal('hide');
         });
     });
+    
 </script>
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('#telefone').mask('(00) - 0000-0000');
+      $('#celular').mask('(00) - 00000-0000');
+      $('#cep').mask('00.000-000');
+      $('#cpf').mask('000.000.000-00');
+      });
+</script>
+<script>
+$(document).ready(function() {
+    $("#cep").on("keypress", function(e) {
+        if (e.which == 13) {  // Verifica se a tecla pressionada é Enter
+            e.preventDefault(); // Previne o comportamento padrão de envio do formulário
+
+            var numCep = $("#cep").val().replace(".", "").replace("-", ""); // Remover formatação do CEP
+            var url = "https://viacep.com.br/ws/"+numCep+"/json";
+
+            console.log("CEP digitado: " + numCep);
+
+            $.ajax({
+                url: url,
+                type: "get",
+                dataType: "json",
+                success: function(dados) {
+                    console.log("Resposta da API:", dados);
+                    $("#estado").val(dados.uf);
+                    $("#cidade").val(dados.localidade);
+                    $("#endereco").val(dados.logradouro);
+                    $("#bairro").val(dados.bairro);
+                },
+                error: function(xhr, status, error) {
+                    console.log("Erro na solicitação AJAX:", error);
+                }
+            });
+        }
+    });
+});
+</script>
+
+
+</body>
+
 </body>
 </html>

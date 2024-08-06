@@ -55,6 +55,8 @@ public class clienteServer extends HttpServlet {
 		    }
 
 	}
+	
+	
 
 	private void apagarFornecedor(HttpServletRequest request, HttpServletResponse response)	throws ServletException, IOException {
 		String id = request.getParameter("id");

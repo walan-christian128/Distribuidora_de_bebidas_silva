@@ -26,8 +26,13 @@ Clientes clientes = new Clientes();
 <%
 Produtos produtos = new Produtos();
 %>
+<%
+HttpSession session_2 = request.getSession();
+JSONArray itensArray = (JSONArray) session.getAttribute("itens");
+%>
 <html lang="pt-BR">
 <head>
+<meta charset="utf-8">
 <title>Venda</title>
 <link rel="icon"
 	href="img/2992664_cart_dollar_mobile_shopping_smartphone_icon.png">
@@ -171,8 +176,7 @@ Produtos produtos = new Produtos();
 							<tbody>
 								<%
 								// Obtendo a lista de itens da sessão
-								HttpSession session_2 = request.getSession();
-								JSONArray itensArray = (JSONArray) session.getAttribute("itens");
+
 								if (itensArray != null) {
 									for (int i = 0; i < itensArray.length(); i++) {
 										JSONObject itemJson = itensArray.getJSONObject(i);
@@ -307,11 +311,9 @@ Produtos produtos = new Produtos();
 				value="<%=request.getAttribute("desconto") != null ? request.getAttribute("desconto").toString() : "0.00"%>"
 				id="desconto">
 			<%
-			HttpSession session_3 = request.getSession();
-			JSONArray itensArray_3 = (JSONArray) session.getAttribute("itens");
-			if (itensArray_3 != null) {
-				for (int i = 0; i < itensArray_3.length(); i++) {
-					JSONObject itemJson_3 = itensArray_3.getJSONObject(i);
+			if (itensArray != null) {
+				for (int i = 0; i < itensArray.length(); i++) {
+					JSONObject itemJson_3 = itensArray.getJSONObject(i);
 			%>
 			<input type="hidden" name="idProd" id="idProd"
 				value="<%=itemJson_3.getString("idProd")%>"> <input
@@ -352,13 +354,13 @@ Produtos produtos = new Produtos();
 
 
 	<!-- Bootstrap JavaScript Bundle com Popper -->
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-		crossorigin="anonymous"></script>
-	<script>
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+<script>
 		var totalValue = 0;
 		var lucroValue = 0;
 		var pegarTotal = 0;
@@ -590,7 +592,7 @@ document.getElementById("carrinho").addEventListener("click", function(event) {
 });
 
 </script>
-<script>
+	<script>
     document.getElementById("btn-troco").addEventListener("click", function() {
         var pegarTotal = parseFloat(document.getElementById("pegardoTotal").value);
         var dinheiroRecebido = parseFloat(document.getElementById("dinheiroRecebido").value);

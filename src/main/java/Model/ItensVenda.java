@@ -1,7 +1,7 @@
 package Model;
 
 public class ItensVenda {
-	  private int id;
+	    private int id;
 	    private Vendas venda;
 	    private Produtos produto;
 	    private int qtd;

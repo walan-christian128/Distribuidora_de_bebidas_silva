@@ -49,4 +49,24 @@
     <servlet-name>vendasServer</servlet-name>
     <url-pattern>/vendasServer</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>inicial</display-name>
+    <servlet-name>inicial</servlet-name>
+    <servlet-class>Controller.inicial</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>inicial</servlet-name>
+    <url-pattern>/inicial</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>cepServer</display-name>
+    <servlet-name>cepServer</servlet-name>
+    <servlet-class>Controller.cepServer</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cepServer</servlet-name>
+    <url-pattern>/cepServer</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -22,6 +22,7 @@ lista = dao.listaFornecedores();
           crossorigin="anonymous">
 </head>
 <body>
+<%@ include file="menu.jsp"%>
 <div class="container mt-4">
     <form name="editar" action="update" method="post">
         <h2>Editar Produto</h2>
@@ -77,8 +78,11 @@ lista = dao.listaFornecedores();
     </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-b0Lfl5RvbR2RzVa+J4MK93mr1Y8yRXYi0D2r6NV5pOVaCxcHw1V9Af2pdPv/2a7+"
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
 </body>
 </html>

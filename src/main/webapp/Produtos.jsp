@@ -34,14 +34,14 @@ listaVenda = Vdao.listarVendasdoDia();
 
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <title>Produtos</title>
 <link rel="icon"
 	href="img/2992655_click_computer_currency_dollar_money_icon.png">
 <script src="scripts/buscaProduto.js"></script>
-<link rel="stylesheet" href="style.css">
+
 
 
 </head>
@@ -50,8 +50,8 @@ listaVenda = Vdao.listarVendasdoDia();
    <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div id="table-container" class="container-sm ">
-                <table id="tabela" class="table table-info table-bordered table-hover overflow-visible">
+            <div id="table-container" class="container-sm overflow-auto"  style="overflow-y: auto; max-height: 400px;">
+                <table id="tabela" class="table table-info table-bordered table-hover overflow-visible" >
                     <!-- cabeçalho da tabela -->
                     <thead>
                         <tr>
@@ -154,7 +154,14 @@ listaVenda = Vdao.listarVendasdoDia();
         <input type="submit" value="Cadastrar Produto" class="btn btn-primary">
     </form>
 </div>
+
 	</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
 
 </body>
 </html>

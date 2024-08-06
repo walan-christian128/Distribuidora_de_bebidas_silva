@@ -1,0 +1,139 @@
+@import
+	url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;600&display=swap')
+	;
+
+:root {
+	--clr-pink: #EF476F;
+	--clr-green: #4406d6;
+	--clr-green_hover: #4406d6;
+	--clr-green_active: #4406d6;
+}
+
+body {
+	min-height: 100vh;
+	display: flex;
+	place-content: left;
+	font-family: 'Nunito', sans-serif;
+}
+
+td a {
+	text-decoration: none; /* Remove o sublinhado */
+	color: inherit; /* Mantém a cor do texto padrão */
+	cursor: pointer; /* Altera o cursor para indicar que é clicável */
+}
+
+a {
+	text-decoration: none;
+}
+
+.btn {
+	display: inline-flex;
+	padding: 1rem;
+	background-color: var(--clr-pink);
+	color: #ffffff;
+	justify-content: center;
+	border-radius: 4px;
+}
+
+.modal {
+	position: fixed;
+	width: 100%;
+	height: 100vh;
+	background-color: #000000ab;
+	display: grid;
+	place-content: center;
+	visibility: hidden;
+	opacity: 0;
+	transition: .3s;
+}
+
+.modal--2 {
+	position: fixed;
+	width: 100%;
+	height: 100vh;
+	background-color: var(--clr-pink);
+	display: grid;
+	place-content: center;
+	visibility: hidden;
+	opacity: 0;
+	transition: .3s;
+}
+
+.modal:target {
+	opacity: 1;
+	visibility: visible;
+}
+
+.modal__content {
+	background-color: #ffffff;
+	width: 400px;
+	padding: 2rem 2rem 1rem;
+	border-radius: 4px;
+	border-top: .5rem solid var(--clr-green);
+}
+
+.modal__title {
+	margin-bottom: 1rem;
+}
+
+.modal__link {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--clr-green);
+	color: #ffffff;
+	padding: 0.7rem 3rem;
+	margin-top: 1rem;
+	border-radius: 4px;
+}
+
+.modal__link:hover {
+	background-color: var(--clr-green_hover);
+}
+
+.modal__link:active {
+	background-color: var(--clr-green_active);
+}
+
+.table-container {
+	position: relative;
+	top: 70px; /* Altere este valor conforme necessário */
+	overflow-y: auto;
+}
+.table-containerproduto {
+	position: relative;
+	top: 70px; /* Altere este valor conforme necessário */
+	right: 50%;
+	left: 10%; /* Move o elemento para a metade da largura do contêiner pai */
+    transform: translateX(-50%); /* Move o elemento de volta metade da sua própria largura, centrando-o horizontalmente */
+	overflow-y: auto;
+}
+
+table {
+	border: 1px solid rgb(0, 0, 0);
+	border-collapse: collapse;
+	background-color: #f5f5f5;
+	width: 100%;
+	margin-bottom: .5em;
+	display: inline-block;
+	top: 200px; /* Altere este valor conforme necessário */
+}
+
+th, td {
+	padding: .7em;
+	text-align: center;
+}
+
+th {
+	background-color: #4406d6;
+	color: #fff;
+}
+
+tr:nth-child(even) {
+	background-color: #ddd;
+}
+
+tr:hover {
+	background-color: #ccc;
+}
+
