@@ -42,10 +42,10 @@ td a {
 </head>
 <body>
 	<%@ include file="menu.jsp"%>
-	<div id="container" class="d-flex container-fluid">
+	<div id="container" class="d-flex container-fluid ">
 
 		<!-- Formulário -->
-		<div id="form-container" class="form-control form-control-sm m-0 ">
+		<div id="form-container" class="form-control form-control-sm m-0 text-dark">
 			<h2>Cadastro/Edição de Fornecedores</h2>
 			<form action="insertFornecedor" name="cadastroFornecedores"
 				method="post" class="form-inline">
@@ -53,7 +53,7 @@ td a {
 
 				<div class="mb-3">
 					<label for="id" class="form-label">Código</label> <input
-						type="text" id="id" class="form-control" name="id" disabled>
+						type="text" id="id" class="form-control " name="id" disabled>
 				</div>
 
 
@@ -179,7 +179,7 @@ td a {
 			</form>
 
 		</div>
-		<div class="container">
+		<div class="container ">
 			<div>
 				<label for="pesquisa" class="form-label ">Pesquisa</label> <input
 					type="text" class="col-md-3 d-flex align-items-center form-control"
@@ -187,7 +187,7 @@ td a {
 					placeholder="Pesquisar fornecedor pelo nome">
 				<div id="tables-container" class="container-sm">
 					<div id="table-container" class="container-sm">
-						<table id="tabela"class="table table-info table-bordered table-hover">
+						<table id="tabela"class="table table-dark table-bordered table-hover">
 							<thead>
 								<h2>Fornecedores Cadastrados</h2>
 
@@ -268,7 +268,8 @@ td a {
 
 				</div>
 			</div>
-
+  </div>
+  </div>
 
 
 

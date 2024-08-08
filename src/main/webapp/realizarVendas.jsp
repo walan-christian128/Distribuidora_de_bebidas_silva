@@ -56,40 +56,40 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 						<div class="row">
 							<div class="col-md-6">
 								<label for="cliId" class="form-label">Codigo: </label> <input
-									type="text" class="form-control" id="cliId" name="cliId"
+									type="text" class="form-control is-valid" id="cliId" name="cliId"
 									required
 									value="<%=request.getAttribute("cliId") != null ? request.getAttribute("cliId").toString() : ""%>"
 									readonly>
 							</div>
 							<div class="col-md-6">
 								<label for="dataProd" class="form-label d-flex">Data: </label> <input
-									type="text" class="form-control d-flex"
+									type="text" class="form-control d-flex is-valid"
 									value="<%=dataAtualFormatada%>" disabled name="data">
 							</div>
 						</div>
 						<div>
 							<label for="cliNome" class="form-label">Nome: </label> <input
-								type="text" class="form-control" id="cliNome" name="cliNome"
+								type="text" class="form-control is-valid" id="cliNome" name="cliNome"
 								required
 								value="<%=request.getAttribute("cliNome") != null ? request.getAttribute("cliNome").toString() : ""%>"
 								readonly>
 						</div>
 						<div class="col-md-6">
 							<label for="validationCustom01" class="form-label">CPF: </label>
-							<input type="text" class="form-control" id="validationCustom01"
+							<input type="text" class="form-control is-valid" id="validationCustom01"
 								name="cliCpf" required
 								value="<%=request.getAttribute("cliCpf") != null ? request.getAttribute("cliCpf").toString() : ""%><%clientes.getCpf();%>">
 						</div>
 						<div class="col-md-6">
 							<label for="cliEndereco" class="form-label">Endereço: </label> <input
-								type="text" class="form-control" id="cliEndereco"
+								type="text" class="form-control is-valid" id="cliEndereco"
 								name="cliEndereco" required
 								value="<%=request.getAttribute("cliEndereco") != null ? request.getAttribute("cliEndereco").toString() : ""%>"
 								readonly>
 						</div>
 						<div class="col-md-2">
 							<label for="cliNumero" class="form-label">N°: </label> <input
-								type="text" class="form-control" id="cliNumero" name="cliNumero"
+								type="text" class="form-control is-valid" id="cliNumero" name="cliNumero"
 								required
 								value="<%=request.getAttribute("cliNumero") != null ? request.getAttribute("cliNumero").toString() : ""%>"
 								readonly>
@@ -102,13 +102,13 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 						<h2>Produto</h2>
 						<div class="col-md-6">
 							<label for="validationCustom02" class="form-label">Codigo:
-							</label> <input type="text" class="form-control" id="idProd"
+							</label> <input type="text" class="form-control is-valid" id="idProd"
 								name="idProd" required
 								value="<%=request.getAttribute("idProd") != null ? request.getAttribute("idProd").toString() : ""%><%produtos.getId();%>">
 						</div>
 						<div>
 							<label for="desProd" class="form-label">Descricão: </label> <input
-								type="text" class="form-control" id="desProd" name="desProd"
+								type="text" class="form-control is-valid" id="desProd" name="desProd"
 								required
 								value="<%=request.getAttribute("desProd") != null ? request.getAttribute("desProd").toString() : ""%>"
 								readonly>
@@ -116,14 +116,14 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 						<div class="row">
 							<div class="col-md-6">
 								<label for="precoProd" class="form-label">Preço: </label> <input
-									type="text" class="form-control" id="precoProd"
+									type="text" class="form-control is-valid" id="precoProd"
 									name="precoProd" required
 									value="<%=request.getAttribute("precoProd") != null ? request.getAttribute("precoProd").toString() : ""%>"
 									readonly>
 							</div>
 							<div class="col-md-6">
 								<label for="qtdProd" class="form-label">QTD: </label> <input
-									type="number" class="form-control" id="qtdProd" name="qtdProd"
+									type="number" class="form-control is-valid" id="qtdProd" name="qtdProd"
 									required
 									value="<%=request.getAttribute("qtdProd") != null ? request.getAttribute("qtdProd").toString() : ""%>">
 							</div>
@@ -132,7 +132,7 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 
 
 							<label for="compraProd" class="form-label">Meu Preço:</label> <input
-								type="text" class="form-control" id="compraProd"
+								type="text" class="form-control is-valid" id="compraProd"
 								name="compraProd" required
 								value="<%=request.getAttribute("compraProd") != null ? request.getAttribute("compraProd").toString() : ""%>"
 								readonly>

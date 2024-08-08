@@ -51,7 +51,7 @@ listaVenda = Vdao.listarVendasdoDia();
     <div class="row">
         <div class="col-12">
             <div id="table-container" class="container-sm overflow-auto"  style="overflow-y: auto; max-height: 400px;">
-                <table id="tabela" class="table table-info table-bordered table-hover overflow-visible" >
+                <table id="tabela" class="table table-dark table-bordered table-hover overflow-visible" >
                     <!-- cabeçalho da tabela -->
                     <thead>
                         <tr>
