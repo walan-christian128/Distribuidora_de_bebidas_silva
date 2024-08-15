@@ -3,6 +3,7 @@
 <%@ page import="Model.Vendas"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="Model.ItensVenda"%>
 <%
 Vendas vendasDia = new Vendas();
 String totalVenda = request.getAttribute("totalVenda") != null ? request.getAttribute("totalVenda").toString() : "";
@@ -51,7 +52,7 @@ String data = request.getAttribute("data") != null ? request.getAttribute("data"
 								class="bi bi-house-up-fill"></i></span> <span class="txt-link">Pagina
 								Inicial</span>
 					</a></li>
-					<li class="nav-item"><a class="nav-link active md-3" href="#"
+					<li class="nav-item"><a class="nav-link active md-3" href="Produtos.jsp"
 						style="font-size: 2rem;"> <span class="icon"><i
 								class="bi bi-backpack4"></i></span> <span class="txt-link">Estoque</span>
 					</a></li>
@@ -63,9 +64,15 @@ String data = request.getAttribute("data") != null ? request.getAttribute("data"
 						<button id="hidden-button" class="btn btn-primary mt-2"
 							data-bs-toggle="modal" data-bs-target="#periodo"
 							style="display: none;">Data</button>
+							
 						<button id="hidden-button_2" class="btn btn-danger mt-2"
 							data-bs-toggle="modal" data-bs-target="#dia"
-							style="display: none;">Dia</button></li>
+							style="display: none;">Dia</button>
+							
+							<button id= "hidden-button_3" style="display: none;" class="btn btn-dark mt-2" data-bs-toggle="modal" data-bs-target="#maisVendido">Mais vendidos</button>
+							
+							</li>
+							
 					<li class="nav-item"><a class="nav-link active md-3"
 						href="Clientes.jsp" style="font-size: 2rem;"> <span
 							class="icon"><i class="bi bi-person"></i></span> <span
@@ -81,9 +88,9 @@ String data = request.getAttribute("data") != null ? request.getAttribute("data"
 								class="bi bi-file-person"></i></span> <span class="txt-link">Funcionarios</span>
 					</a></li>
 					<li class="nav-item"><a class="nav-link active md-3"
-						href="Produtos.jsp" style="font-size: 2rem;"> <span
-							class="icon"><i class="bi bi-box-fill"></i></span> <span
-							class="txt-link">Produtos</span>
+						href="#" style="font-size: 2rem;"> <span
+							class="icon"><i class="bi bi-file-person-fill"></i></span> <span
+							class="txt-link">Usuários</span>
 					</a></li>
 					<li class="nav-item"><a class="nav-link active md-3"
 						href="realizarVendas.jsp" style="font-size: 2rem;"> <span
@@ -201,6 +208,77 @@ String data = request.getAttribute("data") != null ? request.getAttribute("data"
 			</div>
 		</div>
 	</div>
+	
+		<div class="modal fade" id="maisVendido" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Produtos mais vendidos por periodo</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="vendasForm" action=maisVendidos method="post">
+						<div class="mb-3">
+							<label for="dataInicial" class="form-label">Data Incial:</label>
+							<input type="text" id="dataVendainicio" class="form-control"
+								name="dataVendainicio" required
+								placeholder="Digite a data: DD/MM/AAAA">
+						</div>
+						<div class="mb-3">
+							<label for="dataFinal" class="form-label">Data Final:</label> <input
+								type="text" id="dataVendafim" class="form-control" name="dataVendafim"
+								required placeholder="Digite a data: DD/MM/AAAA">
+						</div>
+						<div>
+							<table class="table table-dark table-striped" id="VendaDiaria">
+								<thead>
+									<tr>
+										<th>QUANTIDADE:</th>
+										<th>DESCRIÇÃO :</th>
+
+
+									</tr>
+								</thead>
+								<tbody>
+									<!-- Itera sobre os objetos ItensVenda -->
+									<%
+									List<ItensVenda> maisVendidos = (List<ItensVenda>) request.getAttribute("maisVendidos");
+									if (maisVendidos != null && !maisVendidos.isEmpty()) {
+										for (ItensVenda produtosVendidos : maisVendidos) {
+									%>
+									<tr>
+										<td><%=produtosVendidos.getQtd()%></td>
+										<td><%=produtosVendidos.getProduto().getDescricao()%></td>
+
+									</tr>
+
+									<%
+									}
+									} else {
+									%>
+									<tr>
+										<td colspan="2">Nenhum dado encontrado.</td>
+									</tr>
+									<%
+									}
+									%>
+
+								</tbody>
+							</table>
+
+						</div>
+						<button type="button" class="btn btn-secondary"
+							data-bs-dismiss="modal">Fechar</button>
+						<button type="submit" class="btn btn-primary">Buscar</button>
+					</form>
+				</div>
+				<div class="modal-footer"></div>
+			</div>
+		</div>
+	</div>
 
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 	<script
@@ -214,6 +292,7 @@ String data = request.getAttribute("data") != null ? request.getAttribute("data"
 		src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
 
 	<script type="text/javascript">
+	
 		$(document).ready(function() {
 			$('#dataInicial').mask('00/00/0000');
 			$('#dataFinal').mask('00/00/0000');
@@ -223,6 +302,7 @@ String data = request.getAttribute("data") != null ? request.getAttribute("data"
 				event.preventDefault();
 				$('#hidden-button').toggle();
 				$('#hidden-button_2').toggle();
+				$('#hidden-button_3').toggle();
 			});
 	<%if (periodoVenda != null && !periodoVenda.isEmpty()) {%>
 		$('#periodo').modal('show');
@@ -230,6 +310,10 @@ String data = request.getAttribute("data") != null ? request.getAttribute("data"
 		
 	<%if (!totalVenda.isEmpty()) {%>
 		$('#dia').modal('show');
+	<%}%>
+		
+	<%if (maisVendidos !=null &&!maisVendidos.isEmpty()) {%>
+		$('#maisVendido').modal('show');
 	<%}%>
 		});
 	</script>

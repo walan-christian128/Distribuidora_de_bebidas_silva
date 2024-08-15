@@ -1,6 +1,7 @@
 package DAO;
 
 import Model.Clientes;
+import Model.ItensVenda;
 import Model.Produtos;
 import Conexao.ConnectionFactory;
 
@@ -217,7 +218,7 @@ public class VendasDAO {
 		try {
 			double totalvenda = 0;
 
-			String sql = "SELECT SUM(total_venda) as total FROM tb_vendas WHERE DATE_FORMAT(data_venda,'%d/%m/%Y') = ?";
+			String sql = "SELECT SUM(total_venda) as total FROM tb_vendas WHERE DATE(data_venda) = ?";
 
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setString(1, data_venda.toString());
@@ -272,6 +273,49 @@ public class VendasDAO {
 			// TODO: handle exception
 		}
 
+	}
+	public List<ItensVenda> maisVendidos(Date dataInicio, Date dataFim){
+		List<ItensVenda> lista = new ArrayList<>();
+		
+		try {
+			String sql =" SELECT DISTINCT "
+					+ " SUM(ITENS.QTD)AS QUANTIDADE, "
+					+ " PRODUTO.DESCRICAO "
+					+ " FROM TB_ITENSVENDAS AS ITENS "
+					+ " INNER JOIN TB_PRODUTOS AS PRODUTO ON PRODUTO.ID = ITENS.PRODUTO_ID "
+					+ " INNER JOIN TB_VENDAS AS VENDAS  ON ITENS.VENDA_ID = VENDAS.ID "
+					+ " WHERE  DATE(VENDAS.DATA_VENDA)  BETWEEN? AND? "
+					+ " GROUP BY PRODUTO.DESCRICAO "
+					+ " ORDER BY QUANTIDADE DESC ";
+			
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setDate(1, new java.sql.Date(dataInicio.getTime()));
+			stmt.setDate(2, new java.sql.Date(dataFim.getTime()));
+			
+			ResultSet rs = stmt.executeQuery();
+			 while(rs.next()){
+				 Produtos produtos = new Produtos();
+				 ItensVenda itesnvenda = new ItensVenda(); 
+				 
+				 itesnvenda.setQtd(rs.getInt("QUANTIDADE"));
+				 produtos.setDescricao(rs.getString("DESCRICAO"));
+				 
+				 itesnvenda.setProduto(produtos);
+				 
+				 
+				 lista.add(itesnvenda);
+				
+				 
+				 
+				 
+			 }
+			 
+			
+		} catch (SQLException e) {
+			
+		}
+		return lista;
+		
 	}
 
 }

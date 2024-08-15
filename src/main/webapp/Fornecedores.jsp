@@ -246,6 +246,7 @@ td a {
 											</div>
 											<div class="modal-body">
 												<p>Deseja Realmente Apagar Esse Fornecedor?</p>
+												<h6>"NOTA" : SE VOCÊ ESTA TENTANDO APAGAR UM FORNECEDOR NO QUAL JA ESTA VINCULADO UM PRODUTO NÃO SERA POSSIVEL "REALIZAR SUA EXCLUSÃO". REALIZE UM NOVO CADASTRO SE POSSIVEL</h6>
 											</div>
 											<div class="modal-footer">
 												<button type="button" class="btn btn-secondary"

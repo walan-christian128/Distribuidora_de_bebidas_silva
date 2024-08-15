@@ -43,7 +43,7 @@ import Model.Vendas;
  */
 
 @WebServlet(urlPatterns = { "/selecionarClienteProdutos", "/inserirItens", "/InseirVendaEintens", "/PeriodoVenda",
-		"/dia" })
+		"/dia","/maisVendidos" })
 
 public class vendasServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -87,12 +87,51 @@ public class vendasServer extends HttpServlet {
 
 			vendaPorDia(request, response);
 
+		}  else if (action.equals("/maisVendidos")) {
+
+			maisVendidos(request, response);
+
 		}
 
 		else {
 
 		}
 
+	}
+
+	private void maisVendidos(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String dataVendainicio = request.getParameter("dataVendainicio");
+		String dataVendafim = request.getParameter("dataVendafim");
+		
+	        if(dataVendainicio !=null && dataVendafim !=null) {
+	        	String fomatoData = "dd/MM/yyyy";
+				SimpleDateFormat sdf = new SimpleDateFormat(fomatoData);
+				
+	        	try {
+	        		Date datainicalFormata = sdf.parse(dataVendainicio);
+					Date datafinalFormata = sdf.parse(dataVendafim);
+					VendasDAO dao = new VendasDAO();
+					
+					ArrayList<ItensVenda> lista_2 = (ArrayList<ItensVenda>) dao.maisVendidos(datainicalFormata,
+							datafinalFormata);
+				
+					 request.setAttribute("maisVendidos", lista_2);
+					 
+					 RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
+			         dispatcher.forward(request, response);
+					
+				
+					
+					
+					
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+	        	
+	        	
+	        }
+		
 	}
 
 	private void vendaPorDia(HttpServletRequest request, HttpServletResponse response)

@@ -9,16 +9,16 @@ import jakarta.servlet.http.HttpServletResponse;
 
 
 import java.io.IOException;
-
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-
+import DAO.createData;
 import DAO.VendasDAO;
 import DAO.itensVendaDAO;
 import Model.ItensVenda;
 import Model.Vendas;
 
-@WebServlet(urlPatterns = { "/selecionarVenda", "/totalVendas" })
+@WebServlet(urlPatterns = { "/selecionarVenda", "/totalVendas","/carregarBase"})
 public class inicialServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -32,6 +32,22 @@ public class inicialServer extends HttpServlet {
 		System.out.println("Ação recebida: " + action);
 		if (action.equals("/selecionarVenda")) {
 			itensPorvenda(request, response);
+		}else if (action.equals("/carregarBase")) {
+			try {
+				listaDataBase(request, response);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} 
 	}
 
@@ -65,6 +81,18 @@ public class inicialServer extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
+	}
+	private void listaDataBase(HttpServletRequest request, HttpServletResponse response) throws ServletException, SQLException, IOException, ClassNotFoundException {
+	    createData data = new createData();
+	    try {
+	        ArrayList<String> lista = (ArrayList<String>) data.ListarBases();
+	       // Verifique o tamanho da lista
+	        request.setAttribute("base", lista);
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Imprima a pilha de erros para depuração
+	    }
+	    RequestDispatcher rd = request.getRequestDispatcher("Login.jsp");
+	    rd.forward(request, response);
 	}
 
 	

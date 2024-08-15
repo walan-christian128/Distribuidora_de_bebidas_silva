@@ -240,12 +240,13 @@ td a {
 									<div class="modal-dialog">
 										<div class="modal-content">
 											<div class="modal-header">
-												<h5 class="modal-title">Editar Fornecedor</h5>
+												<h5 class="modal-title">Editar Cliente</h5>
 												<button type="button" class="btn-close"
 													data-bs-dismiss="modal" aria-label="Close"></button>
 											</div>
 											<div class="modal-body">
-												<p>Deseja Realmente Apagar Esse Fornecedor?</p>
+												<p>Deseja Realmente Apagar Esse Cliente?</p>
+												<h6>"NOTA" : SE VOCÊ ESTA TENTANDO APAGAR UM CLIENTE NO QUAL JA ESTA VINCULADO UM VENDA NÃO SERA POSSIVEL "REALIZAR SUA EXCLUSÃO". REALIZE UM NOVO CADASTRO SE POSSIVEL</h6>
 											</div>
 											<div class="modal-footer">
 												<button type="button" class="btn btn-secondary"
