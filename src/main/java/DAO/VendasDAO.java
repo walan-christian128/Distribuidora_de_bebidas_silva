@@ -22,8 +22,8 @@ public class VendasDAO {
 
 	private Connection con;
 
-	public VendasDAO() {
-		this.con = new ConnectionFactory().getConnection();
+	public VendasDAO( String databaseName) throws ClassNotFoundException {
+		this.con = new ConnectionFactory().getConnection(databaseName);
 
 	}
 	// Cadastrar Venda//

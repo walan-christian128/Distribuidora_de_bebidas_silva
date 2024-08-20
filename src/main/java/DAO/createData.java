@@ -1,130 +1,212 @@
 package DAO;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mysql.cj.jdbc.DatabaseMetaData;
-import com.mysql.cj.xdevapi.Result;
 
 import Conexao.ConnectionFactory;
-import Model.Vendas;
+import Model.Usuario;
 
 public class createData {
-	private static Connection con;
+    private Connection con;
 
-	public createData() {
-		createData.con = new ConnectionFactory().getConnection();
+    private static boolean isInitialized = false;
 
-	}
+    public createData(String databaseName) {
+        if (isInitialized) {
+            return; // Não faz nada se já foi inicializado
+        }
 
-	public static void createDatabase(String databaseName) throws ClassNotFoundException {
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
+        try {
+            // Conectar ao MySQL sem especificar um banco de dados para criar o banco
+            Connection tempCon = new ConnectionFactory().getConnection("");
+            if (tempCon == null) {
+                System.err.println("Erro: Conexão temporária não foi estabelecida.");
+                return;
+            }
 
-			Statement statement = con.createStatement();
+            // Verifica se o banco de dados já existe e cria se necessário
+            createDatabase(tempCon, databaseName);
 
-			// Criar banco de dados
-			String createDatabaseSQL = "CREATE DATABASE " + databaseName;
-			statement.executeUpdate(createDatabaseSQL);
-			System.out.println("Banco de dados criado com sucesso!");
+            // Fechar conexão temporária
+            tempCon.close();
 
-			// Conectar ao novo banco de dados
+            // Conectar ao banco de dados recém-criado
+            this.con = new ConnectionFactory().getConnection(databaseName);
+            if (this.con == null) {
+                System.err.println("Erro: Conexão com o novo banco de dados não foi estabelecida.");
+                return;
+            }
 
-			statement = con.createStatement();
+            // Criar tabelas
+            createTables();
 
-			// Criar tabelas
-			String createTableSQL = "CREATE TABLE tb_clientes (" + "    id int NOT NULL AUTO_INCREMENT,"
-					+ "	   nome varchar(100) DEFAULT NULL," + "    rg varchar(30) DEFAULT NULL,"
-					+ "    cpf varchar(20) DEFAULT NULL," + "    email varchar(200) DEFAULT NULL,"
-					+ "    telefone varchar(30) DEFAULT NULL," + "    celular varchar(30) DEFAULT NULL,"
-					+ "    cep varchar(100) DEFAULT NULL," + "    endereco varchar(255) DEFAULT NULL,"
-					+ "    numero int DEFAULT NULL," + "    complemento varchar(200) DEFAULT NULL,"
-					+ "    cidade varchar(100) DEFAULT NULL," + "    estado varchar(2) DEFAULT NULL,"
-					+ "    PRIMARY KEY (id) " + ")";
-			statement.executeUpdate(createTableSQL);
+            isInitialized = true; // Marca como inicializado
 
-			String createTable_2 = "CREATE TABLE `tb_fornecedores` (" + "  `id` int NOT NULL AUTO_INCREMENT,"
-					+ "  `nome` varchar(100) DEFAULT NULL," + "  `cnpj` varchar(100) DEFAULT NULL,"
-					+ "  `email` varchar(200) DEFAULT NULL," + "  `telefone` varchar(30) DEFAULT NULL,"
-					+ "  `celular` varchar(30) DEFAULT NULL," + "  `cep` varchar(100) DEFAULT NULL,"
-					+ "  `endereco` varchar(255) DEFAULT NULL," + "  `numero` int DEFAULT NULL,"
-					+ "  `complemento` varchar(200) DEFAULT NULL," + "  `bairro` varchar(100) DEFAULT NULL,"
-					+ "  `cidade` varchar(100) DEFAULT NULL," + "  `estado` varchar(2) DEFAULT NULL,"
-					+ "  PRIMARY KEY (`id`)"
-					+ ") ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
-			statement.executeUpdate(createTable_2);
+        } catch (Exception e) {
+            System.err.println("Erro ao tentar estabelecer conexão com o banco de dados.");
+            e.printStackTrace();
+        }
+    }
 
-			String createTable_3 = "CREATE TABLE `tb_funcionarios` (" + "  `id` int NOT NULL AUTO_INCREMENT,"
-					+ "  `nome` varchar(100) DEFAULT NULL," + "  `rg` varchar(30) DEFAULT NULL,"
-					+ "  `cpf` varchar(20) DEFAULT NULL," + "  `email` varchar(200) DEFAULT NULL,"
-					+ "  `senha` varchar(10) DEFAULT NULL," + "  `cargo` varchar(100) DEFAULT NULL,"
-					+ "  `nivel_acesso` varchar(50) DEFAULT NULL," + "  `telefone` varchar(30) DEFAULT NULL,"
-					+ "  `celular` varchar(30) DEFAULT NULL," + "  `cep` varchar(100) DEFAULT NULL,"
-					+ "  `endereco` varchar(255) DEFAULT NULL," + "  `numero` int DEFAULT NULL,"
-					+ "  `complemento` varchar(200) DEFAULT NULL," + "  `bairro` varchar(100) DEFAULT NULL,"
-					+ "  `cidade` varchar(100) DEFAULT NULL," + "  `estado` varchar(2) DEFAULT NULL,"
-					+ "  PRIMARY KEY (`id`)" + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
-			statement.executeUpdate(createTable_3);
+    private void createDatabase(Connection tempCon, String databaseName) throws SQLException {
+        Statement statement = tempCon.createStatement();
+        try {
+            // Verifica se o banco de dados já existe
+            String checkDatabaseSQL = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" + databaseName + "'";
+            ResultSet rs = statement.executeQuery(checkDatabaseSQL);
 
-			String createTable_4 = "CREATE TABLE `tb_produtos` (" + "  `id` int NOT NULL AUTO_INCREMENT,"
-					+ "  `descricao` varchar(100) DEFAULT NULL," + "  `preco_de_venda` decimal(10,2) DEFAULT NULL,"
-					+ "  `preco_de_compra` decimal(10,2) DEFAULT NULL," + "  `qtd_estoque` int DEFAULT NULL,"
-					+ "  `for_id` int DEFAULT NULL," + "  PRIMARY KEY (`id`)," + "  KEY `for_id` (`for_id`),"
-					+ "  CONSTRAINT `tb_produtos_ibfk_1` FOREIGN KEY (`for_id`) REFERENCES `tb_fornecedores` (`id`)"
-					+ ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
-			statement.executeUpdate(createTable_4);
+            if (rs.next()) {
+                System.out.println("Banco de dados " + databaseName + " já existe.");
+            } else {
+                // Criar banco de dados
+                String createDatabaseSQL = "CREATE DATABASE " + databaseName;
+                statement.executeUpdate(createDatabaseSQL);
+                System.out.println("Banco de dados criado com sucesso!");
+            }
 
-			String createTable_5 = "CREATE TABLE `tb_vendas` (" + "  `id` int NOT NULL AUTO_INCREMENT,"
-					+ "  `cliente_id` int DEFAULT NULL," + "  `data_venda` datetime DEFAULT NULL,"
-					+ "  `total_venda` decimal(10,2) DEFAULT NULL," + "  `observacoes` text," + "  PRIMARY KEY (`id`),"
-					+ "  KEY `cliente_id` (`cliente_id`),"
-					+ "  CONSTRAINT `tb_vendas_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `tb_clientes` (`id`)"
-					+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
-			statement.executeUpdate(createTable_5);
+            rs.close();
+        } finally {
+            statement.close();
+        }
+    }
 
-			String createTable_6 = "CREATE TABLE `tb_itensvendas` (" + "  `id` int NOT NULL AUTO_INCREMENT,"
-					+ "  `venda_id` int DEFAULT NULL," + "  `produto_id` int DEFAULT NULL,"
-					+ "  `qtd` int DEFAULT NULL," + "  `subtotal` decimal(10,2) DEFAULT NULL," + "  PRIMARY KEY (`id`),"
-					+ "  KEY `venda_id` (`venda_id`)," + "  KEY `produto_id` (`produto_id`),"
-					+ "  CONSTRAINT `tb_itensvendas_ibfk_1` FOREIGN KEY (`venda_id`) REFERENCES `tb_vendas` (`id`),"
-					+ "  CONSTRAINT `tb_itensvendas_ibfk_2` FOREIGN KEY (`produto_id`) REFERENCES `tb_produtos` (`id`)"
-					+ ") ";
-			statement.executeUpdate(createTable_6);
+    private void createTables() throws SQLException {
+        Statement statement = con.createStatement();
+        try {
+            // Criação das tabelas
+            String createTable_1 = "CREATE TABLE tb_clientes (" +
+                    "id int NOT NULL AUTO_INCREMENT," +
+                    "nome varchar(100) DEFAULT NULL," +
+                    "rg varchar(30) DEFAULT NULL," +
+                    "cpf varchar(20) DEFAULT NULL," +
+                    "email varchar(200) DEFAULT NULL," +
+                    "telefone varchar(30) DEFAULT NULL," +
+                    "celular varchar(30) DEFAULT NULL," +
+                    "cep varchar(100) DEFAULT NULL," +
+                    "endereco varchar(255) DEFAULT NULL," +
+                    "numero int DEFAULT NULL," +
+                    "complemento varchar(200) DEFAULT NULL," +
+                    "cidade varchar(100) DEFAULT NULL," +
+                    "estado varchar(2) DEFAULT NULL," +
+                    "PRIMARY KEY (id)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+            statement.executeUpdate(createTable_1);
 
-			// System.out.println("Tabelas Criadas com sucesso!");
+            String createTable_2 = "CREATE TABLE tb_fornecedores (" +
+                    "id int NOT NULL AUTO_INCREMENT," +
+                    "nome varchar(100) DEFAULT NULL," +
+                    "cnpj varchar(100) DEFAULT NULL," +
+                    "email varchar(200) DEFAULT NULL," +
+                    "telefone varchar(30) DEFAULT NULL," +
+                    "celular varchar(30) DEFAULT NULL," +
+                    "cep varchar(100) DEFAULT NULL," +
+                    "endereco varchar(255) DEFAULT NULL," +
+                    "numero int DEFAULT NULL," +
+                    "complemento varchar(200) DEFAULT NULL," +
+                    "bairro varchar(100) DEFAULT NULL," +
+                    "cidade varchar(100) DEFAULT NULL," +
+                    "estado varchar(2) DEFAULT NULL," +
+                    "PRIMARY KEY (id)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+            statement.executeUpdate(createTable_2);
 
-			// Fechar conexão
-			statement.close();
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+            String createTable_3 = "CREATE TABLE tb_funcionarios (" +
+                    "id int NOT NULL AUTO_INCREMENT," +
+                    "nome varchar(100) DEFAULT NULL," +
+                    "rg varchar(30) DEFAULT NULL," +
+                    "cpf varchar(20) DEFAULT NULL," +
+                    "email varchar(200) DEFAULT NULL," +
+                    "senha varchar(10) DEFAULT NULL," +
+                    "cargo varchar(100) DEFAULT NULL," +
+                    "nivel_acesso varchar(50) DEFAULT NULL," +
+                    "telefone varchar(30) DEFAULT NULL," +
+                    "celular varchar(30) DEFAULT NULL," +
+                    "cep varchar(100) DEFAULT NULL," +
+                    "endereco varchar(255) DEFAULT NULL," +
+                    "numero int DEFAULT NULL," +
+                    "complemento varchar(200) DEFAULT NULL," +
+                    "bairro varchar(100) DEFAULT NULL," +
+                    "cidade varchar(100) DEFAULT NULL," +
+                    "estado varchar(2) DEFAULT NULL," +
+                    "PRIMARY KEY (id)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+            statement.executeUpdate(createTable_3);
 
-	public List<String> ListarBases() {
-		List<String> lista = new ArrayList<>();
-		try {
-			String sql = "SELECT schema_name FROM information_schema.schemata where schema_name not in ('mysql','information_schema','performance_schema')";
-			PreparedStatement stmt = con.prepareStatement(sql);
-			ResultSet rs = stmt.executeQuery();
+            String createTable_4 = "CREATE TABLE tb_produtos (" +
+                    "id int NOT NULL AUTO_INCREMENT," +
+                    "descricao varchar(100) DEFAULT NULL," +
+                    "preco_de_venda decimal(10,2) DEFAULT NULL," +
+                    "preco_de_compra decimal(10,2) DEFAULT NULL," +
+                    "qtd_estoque int DEFAULT NULL," +
+                    "for_id int DEFAULT NULL," +
+                    "PRIMARY KEY (id)," +
+                    "KEY for_id (for_id)," +
+                    "CONSTRAINT tb_produtos_ibfk_1 FOREIGN KEY (for_id) REFERENCES tb_fornecedores (id)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+            statement.executeUpdate(createTable_4);
 
-			while (rs.next()) {
-				String schemaName = rs.getString("schema_name");
-		
-				lista.add(schemaName);
-			}
+            String createTable_5 = "CREATE TABLE tb_vendas (" +
+                    "id int NOT NULL AUTO_INCREMENT," +
+                    "cliente_id int DEFAULT NULL," +
+                    "data_venda datetime DEFAULT NULL," +
+                    "total_venda decimal(10,2) DEFAULT NULL," +
+                    "observacoes text," +
+                    "PRIMARY KEY (id)," +
+                    "KEY cliente_id (cliente_id)," +
+                    "CONSTRAINT tb_vendas_ibfk_1 FOREIGN KEY (cliente_id) REFERENCES tb_clientes (id)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+            statement.executeUpdate(createTable_5);
 
-			 // Verifique o tamanho da lista
-		} catch (Exception e) {
-			e.printStackTrace(); // Imprima a pilha de erros para depuração
-		}
-		return lista;
-	}
+            String createTable_6 = "CREATE TABLE tb_itensvendas (" +
+                    "id int NOT NULL AUTO_INCREMENT," +
+                    "venda_id int DEFAULT NULL," +
+                    "produto_id int DEFAULT NULL," +
+                    "qtd int DEFAULT NULL," +
+                    "subtotal decimal(10,2) DEFAULT NULL," +
+                    "PRIMARY KEY (id)," +
+                    "KEY venda_id (venda_id)," +
+                    "KEY produto_id (produto_id)," +
+                    "CONSTRAINT tb_itensvendas_ibfk_1 FOREIGN KEY (venda_id) REFERENCES tb_vendas (id)," +
+                    "CONSTRAINT tb_itensvendas_ibfk_2 FOREIGN KEY (produto_id) REFERENCES tb_produtos (id)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
+            statement.executeUpdate(createTable_6);
 
+            String createTable_7 = "CREATE TABLE tb_usuario (" +
+                    "ID INT auto_increment PRIMARY KEY," +
+                    "NOME VARCHAR(150)," +
+                    "TELEFONE VARCHAR(150)," +
+                    "EMAIL VARCHAR(150)," +
+                    "SENHA VARCHAR(300)" +
+                    ");";
+            statement.executeUpdate(createTable_7);
+
+            System.out.println("Tabelas criadas com sucesso!");
+        } finally {
+            statement.close();
+        }
+    }
+
+    public void inserirUsuarioEmpresa(Usuario uso) throws SQLException {
+        if (this.con == null) {
+            System.err.println("Erro: Conexão com o banco de dados não foi estabelecida.");
+            return;
+        }
+
+        String sql = "INSERT INTO tb_usuario (NOME, TELEFONE, EMAIL, SENHA) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, uso.getNome());
+            stmt.setString(2, uso.getTelefone());
+            stmt.setString(3, uso.getEmail());
+            stmt.setString(4, uso.getSenha());
+
+            stmt.execute();
+            System.out.println("Usuário inserido com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao inserir usuário: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

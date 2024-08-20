@@ -18,8 +18,8 @@ public class ProdutosDAO {
 
 	private Connection con;
 
-	public ProdutosDAO() {
-		this.con = new ConnectionFactory().getConnection();
+	public ProdutosDAO( String databaseName) throws ClassNotFoundException {
+		this.con = new ConnectionFactory().getConnection(databaseName);
 
 	}
 

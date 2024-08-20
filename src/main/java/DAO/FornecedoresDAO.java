@@ -20,8 +20,8 @@ public class FornecedoresDAO {
 
 	private Connection con;
 
-	public FornecedoresDAO() {
-		this.con = new ConnectionFactory().getConnection();
+	public FornecedoresDAO( String databaseName) throws ClassNotFoundException {
+		this.con = new ConnectionFactory().getConnection(databaseName);
 
 	}
 

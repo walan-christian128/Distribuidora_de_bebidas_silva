@@ -14,8 +14,8 @@ import Model.Produtos;
 public class itensVendaDAO {
 	private Connection con;
 
-    public itensVendaDAO() {
-        this.con = new ConnectionFactory().getConnection();
+    public itensVendaDAO(String databaseName) throws ClassNotFoundException {
+        this.con = new ConnectionFactory().getConnection(databaseName);
 
     }
 
