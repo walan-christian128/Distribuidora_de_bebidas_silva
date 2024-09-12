@@ -47,6 +47,7 @@ import Model.Vendas;
 
 public class vendasServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
 
 	double total, subtotal, lucro, preco, meuPreco;
 
@@ -63,45 +64,54 @@ public class vendasServer extends HttpServlet {
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+            throws ServletException, IOException {
+        // Obtendo a sessão
+        HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa"); // Exemplo de atributo de sessão
 
-		String action = request.getServletPath();
-		System.out.println(action);
-		if (action.equals("/selecionarClienteProdutos")) {
-			selecionarClienteProd(request, response);
+        // Agora, você pode usar o valor da "empresa" em qualquer parte do seu código
+        if (empresa != null) {
+            System.out.println("Empresa selecionada: " + empresa);
+        } else {
+            System.out.println("Nenhuma empresa selecionada.");
+        }
 
-		} else if (action.equals("/inserirItens")) {
-			inserirItens(request, response);
-
-		} else if (action.equals("/InseirVendaEintens")) {
-
-			inserirVendas(request, response);
-
-		} else if (action.equals("/PeriodoVenda")) {
-
-			vendaPorPeriodo(request, response);
-
-		} else if (action.equals("/dia")) {
-
-			vendaPorDia(request, response);
-
-		}  else if (action.equals("/maisVendidos")) {
-
-			maisVendidos(request, response);
-
-		}
-
-		else {
-
-		}
-
-	}
+        String action = request.getServletPath();
+        switch (action) {
+            case "/selecionarClienteProdutos":
+                try {
+                    selecionarClienteProd(request, response);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "/inserirItens":
+                inserirItens(request, response);
+                break;
+            case "/InseirVendaEintens":
+                inserirVendas(request, response);
+                break;
+            case "/PeriodoVenda":
+                vendaPorPeriodo(request, response);
+                break;
+            case "/dia":
+                vendaPorDia(request, response);
+                break;
+            case "/maisVendidos":
+                maisVendidos(request, response);
+                break;
+            default:
+                response.getWriter().append("Ação não reconhecida.");
+                break;
+        }
+    }
 
 	private void maisVendidos(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String dataVendainicio = request.getParameter("dataVendainicio");
 		String dataVendafim = request.getParameter("dataVendafim");
+		
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa");
 		
 	        if(dataVendainicio !=null && dataVendafim !=null) {
 	        	String fomatoData = "dd/MM/yyyy";
@@ -110,7 +120,7 @@ public class vendasServer extends HttpServlet {
 	        	try {
 	        		Date datainicalFormata = sdf.parse(dataVendainicio);
 					Date datafinalFormata = sdf.parse(dataVendafim);
-					VendasDAO dao = new VendasDAO();
+					VendasDAO dao = new VendasDAO(empresa);
 					
 					ArrayList<ItensVenda> lista_2 = (ArrayList<ItensVenda>) dao.maisVendidos(datainicalFormata,
 							datafinalFormata);
@@ -137,11 +147,15 @@ public class vendasServer extends HttpServlet {
 	private void vendaPorDia(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String data = request.getParameter("data");
+		
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa");
+        
         try {
             SimpleDateFormat dataVenda = new SimpleDateFormat("dd/MM/yyyy");
             Date dataVendaInf = dataVenda.parse(data);
 
-            VendasDAO dao = new VendasDAO();
+            VendasDAO dao = new VendasDAO(empresa);
             double totalVenda = dao.retornaTotalVendaPorData(dataVendaInf);
 
             request.setAttribute("totalVenda", totalVenda);
@@ -160,6 +174,9 @@ public class vendasServer extends HttpServlet {
 			throws ServletException, IOException {
 		String dataInicial = request.getParameter("dataInicial");
 		String dataFinal = request.getParameter("dataFinal");
+		
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa");
 
 		if (dataInicial != null && dataFinal != null) {
 			String fomatoData = "dd/MM/yyyy";
@@ -168,7 +185,7 @@ public class vendasServer extends HttpServlet {
 			try {
 				Date datainicalFormata = sdf.parse(dataInicial);
 				Date datafinalFormata = sdf.parse(dataFinal);
-				VendasDAO dao = new VendasDAO();
+				VendasDAO dao = new VendasDAO(empresa);
 				ArrayList<Vendas> lista_2 = (ArrayList<Vendas>) dao.totalPorPeriodo(datainicalFormata,
 						datafinalFormata);
 				request.setAttribute("periodo", lista_2);
@@ -184,7 +201,10 @@ public class vendasServer extends HttpServlet {
 
 	private void inserirVendas(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		HttpSession session = request.getSession();
+		  String empresa = (String) session.getAttribute("empresa");
+		  
 		String idCli = request.getParameter("cliId");
 		int cliId = Integer.parseInt(idCli);
 
@@ -204,7 +224,7 @@ public class vendasServer extends HttpServlet {
 				obj.setDesconto(Double.parseDouble(request.getParameter("desconto")));
 				obj.setFormaPagamento(request.getParameter("formaPagamento"));
 
-				VendasDAO dao = new VendasDAO();
+				VendasDAO dao = new VendasDAO(empresa);
 				dao.cadastrarVenda(obj);
 
 				/* System.out.println("Cliente" + objCli.getId()); */
@@ -363,7 +383,7 @@ public class vendasServer extends HttpServlet {
 	}
 
 	private void selecionarClienteProd(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws ServletException, IOException, ClassNotFoundException {
 		String cpfCli = request.getParameter("cliCpf");
 		String idProdStr = request.getParameter("idProd");
 		int idProd = Integer.parseInt(idProdStr);

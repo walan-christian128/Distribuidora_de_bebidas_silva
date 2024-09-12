@@ -2,6 +2,11 @@
 <%@ page import="java.util.ArrayList"%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
+
+<%
+String erro = (String) request.getAttribute("erro");
+
+%>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -79,45 +84,46 @@
 						<h1 class="ls-login-logo custom-title">Login</h1>
 						<!-- Adicione a classe custom-title ao tÃ­tulo -->
 
-
+                       
+                         <form action = "logar" method="post">
 
 						<div class="form-group ls-login-user">
 							<label for="userLogin" class="userLogin">Usuário</label> <input
 								class="form-control form-control-lg" id="userLogin" type="text"
-								aria-label="Usuáio" placeholder="Usuário">
+								aria-label="Usuáio" placeholder="Usuário" name="email">
 						</div>
 
 						<div class="form-group ls-login-password">
 							<label for="userPassword" class="userPassword">Senha</label> <input
 								class="form-control form-control-lg" id="userPassword"
-								type="password" aria-label="Senha" placeholder="Senha">
+								type="password" aria-label="Senha" placeholder="Senha" name="senha">
 						</div>
-						<div>
-						    <form action="carregarBase" method="get">
-							<label>Empresa</label> <select name="empresa" class="form-select">
-								<%
-								List<String> bases = (List<String>) request.getAttribute("base");
-								if (bases != null) {
-									out.println("Total de bases recebidas: " + bases.size()); // Verifique se isso é impresso no navegador
-									for (String base : bases) {
-								%>
-								<option value="<%=base%>"><%=base%></option>
-								<%
-								}
-								} else {
-								out.println("Nenhuma base recebida."); // Verifique se isso aparece
-								}
-								%>
-							</select>
-							<div>
-							<input type="submit" class="btn btn-primary" value="Carregar empresa"> 
-							</div>
-                           </form>
-
-
+						
+						<div class="form-group ls-login-enpressa">
+							<label for="userEmpresa" class="userEmpresa" style="background-color: white;">Empresa</label> <input
+								class="form-control" id="userEmpresa"
+								type="text"  placeholder= "Empresa: da mesma forma do cadastro" name="empresa">
 						</div>
 
-						<a href="#" class="ls-login-forgot">Esqueci minha senha</a>
+						
+
+
+							<div class= "mb-3">
+                           <input type="submit" class="btn btn-primary" value="Entrar">
+                           <p style="background-color: white;">
+                           <% 
+                           if(erro !=null){
+                           
+                            out.print(erro);
+                           }
+                           %>
+                           </p>
+                           </div>
+						   </form>
+
+						</div>
+
+						<a href="RecuperaSenha.html" class="ls-login-forgot">Esqueci minha senha</a>
 
 
 			
@@ -128,5 +134,7 @@
 			</div>
 		</div>
 	</div>
+
+	
 </body>
 </html>

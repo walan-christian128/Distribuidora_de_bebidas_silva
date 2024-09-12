@@ -1,6 +1,7 @@
 package DAO;
 
 import Model.Clientes;
+import Conexao.ConectionDataBases;
 import Conexao.ConnectionFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,8 +19,8 @@ public class ClientesDAO {
 
     private Connection con;
 
-    public ClientesDAO(String databaseName) throws ClassNotFoundException {
-        this.con = new ConnectionFactory().getConnection(databaseName);
+    public ClientesDAO() throws ClassNotFoundException {
+    	  this.con = new ConectionDataBases().getConectionDataBases();
 
     }
 

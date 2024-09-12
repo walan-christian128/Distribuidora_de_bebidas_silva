@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Conexao.ConectionDataBases;
 import Conexao.ConnectionFactory;
 import Model.ItensVenda;
 import Model.Produtos;
@@ -14,8 +15,8 @@ import Model.Produtos;
 public class itensVendaDAO {
 	private Connection con;
 
-    public itensVendaDAO(String databaseName) throws ClassNotFoundException {
-        this.con = new ConnectionFactory().getConnection(databaseName);
+    public itensVendaDAO() throws ClassNotFoundException {
+    	  this.con = new ConectionDataBases().getConectionDataBases();
 
     }
 

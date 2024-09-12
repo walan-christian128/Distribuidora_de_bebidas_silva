@@ -11,14 +11,26 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="java.time.LocalDate"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
+
+
+
+
+
 <%
+
+
+String empresa = (String) session.getAttribute("empresa");
+if (empresa == null || empresa.isEmpty()) {
+    throw new RuntimeException("O nome da empresa não está definido na sessão.");
+}
 List<Vendas> lista;
-VendasDAO Vdao = new VendasDAO();
+VendasDAO Vdao = new VendasDAO(empresa);
 lista = Vdao.listarVendasdoDia();
 %>
 <%
+
 List<Produtos> prodp; // Declara a lista
-ProdutosDAO daop = new ProdutosDAO();
+ProdutosDAO daop = new ProdutosDAO(empresa);
 prodp = daop.listarProdutos(); // Atribui o resultado da busca à lista exibida na tabela
 %>
 <%
@@ -33,7 +45,7 @@ DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 LocalDate data_venda = LocalDate.parse(datamysql, formato);
 
 // Instanciar o DAO e obter o total de vendas
-VendasDAO dao = new VendasDAO();
+VendasDAO dao = new VendasDAO(empresa);
 totalVendasDia = dao.retornaTotalVendaPorDia(data_venda);
 
 // Definir o total de vendas como atributo da requisição

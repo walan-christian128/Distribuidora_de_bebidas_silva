@@ -1,5 +1,6 @@
 package DAO;
 
+import Conexao.ConectionDataBases;
 import Conexao.ConnectionFactory;
 import Model.Fornecedores;
 import Model.Produtos;
@@ -17,10 +18,15 @@ import java.util.List;
 public class ProdutosDAO {
 
 	private Connection con;
+	 private ConectionDataBases connectionFactory;
 
-	public ProdutosDAO( String databaseName) throws ClassNotFoundException {
-		this.con = new ConnectionFactory().getConnection(databaseName);
-
+	public ProdutosDAO(String dataBaseName) throws ClassNotFoundException {
+		 this.connectionFactory = new ConectionDataBases(dataBaseName);
+	        try {
+	            this.con = connectionFactory.getConectionDataBases();
+	        } catch (SQLException e) {
+	            e.printStackTrace(); // Trate a exceção conforme necessário
+	        }
 	}
 
 	// metodo cadastra produtos//

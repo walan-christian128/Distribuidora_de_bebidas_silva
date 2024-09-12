@@ -5,19 +5,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import Conexao.ConnectionFactory;
+import Model.PasswordUtil;
 import Model.Usuario;
 
 public class createData {
     private Connection con;
 
-    private static boolean isInitialized = false;
+
 
     public createData(String databaseName) {
-        if (isInitialized) {
-            return; // Não faz nada se já foi inicializado
-        }
+    
 
         try {
             // Conectar ao MySQL sem especificar um banco de dados para criar o banco
@@ -43,7 +44,7 @@ public class createData {
             // Criar tabelas
             createTables();
 
-            isInitialized = true; // Marca como inicializado
+          
 
         } catch (Exception e) {
             System.err.println("Erro ao tentar estabelecer conexão com o banco de dados.");
@@ -189,7 +190,8 @@ public class createData {
         }
     }
 
-    public void inserirUsuarioEmpresa(Usuario uso) throws SQLException {
+    @SuppressWarnings("static-access")
+	public void inserirUsuarioEmpresa(Usuario uso) throws SQLException {
         if (this.con == null) {
             System.err.println("Erro: Conexão com o banco de dados não foi estabelecida.");
             return;
@@ -197,10 +199,12 @@ public class createData {
 
         String sql = "INSERT INTO tb_usuario (NOME, TELEFONE, EMAIL, SENHA) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
+        	PasswordUtil pass = new PasswordUtil();
+        	
             stmt.setString(1, uso.getNome());
             stmt.setString(2, uso.getTelefone());
             stmt.setString(3, uso.getEmail());
-            stmt.setString(4, uso.getSenha());
+            stmt.setString(4, pass.hashPassword(uso.getSenha()));
 
             stmt.execute();
             System.out.println("Usuário inserido com sucesso!");
@@ -209,4 +213,6 @@ public class createData {
             e.printStackTrace();
         }
     }
+    
+    
 }

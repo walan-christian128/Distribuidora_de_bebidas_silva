@@ -69,4 +69,14 @@
     <servlet-name>cepServer</servlet-name>
     <url-pattern>/cepServer</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>userLogin</display-name>
+    <servlet-name>userLogin</servlet-name>
+    <servlet-class>Controller.userLogin</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userLogin</servlet-name>
+    <url-pattern>/userLogin</url-pattern>
+  </servlet-mapping>
 </web-app>

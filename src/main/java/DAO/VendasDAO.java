@@ -3,9 +3,11 @@ package DAO;
 import Model.Clientes;
 import Model.ItensVenda;
 import Model.Produtos;
+import Conexao.ConectionDataBases;
 import Conexao.ConnectionFactory;
 
 import Model.Vendas;
+import jakarta.servlet.http.HttpSession;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,12 +22,18 @@ import java.util.List;
 
 public class VendasDAO {
 
-	private Connection con;
+	 private Connection con;
+	 private ConectionDataBases connectionFactory;
 
-	public VendasDAO( String databaseName) throws ClassNotFoundException {
-		this.con = new ConnectionFactory().getConnection(databaseName);
-
-	}
+	 public VendasDAO(String databaseName) {
+	        // Inicialize a conexão com o banco de dados
+	        this.connectionFactory = new ConectionDataBases(databaseName);
+	        try {
+	            this.con = connectionFactory.getConectionDataBases();
+	        } catch (SQLException e) {
+	            e.printStackTrace(); // Trate a exceção conforme necessário
+	        }
+	    }
 	// Cadastrar Venda//
 
 	public void cadastrarVenda(Vendas obj) {
@@ -121,50 +129,47 @@ public class VendasDAO {
 
 	}
 
-	public List<Vendas> listarVendasdoDia() {
-		try {
-			// 1 passo criar lista de Vendas//
-			List<Vendas> lista = new ArrayList<>();
+	 public List<Vendas> listarVendasdoDia() {
+	        List<Vendas> lista = new ArrayList<>();
+	        String sql = "select v.id, date_format(v.data_venda, '%d/%m/%Y %H:%i:%s') as data_formatada, "
+	                   + "c.nome, v.total_venda, v.observacoes, v.lucro, v.desconto, v.forma_pagamento "
+	                   + "from tb_vendas as v "
+	                   + "inner join tb_clientes as c on (v.cliente_id = c.id) "
+	                   + "where date(v.data_venda) = ?";
 
-			// Obter a data atual do servidor
-			Date agora = new Date();
-			SimpleDateFormat dataEUA = new SimpleDateFormat("yyyy-MM-dd");
-			String datamysql = dataEUA.format(agora);
+	        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+	            // Obter a data atual do servidor
+	            Date agora = new Date();
+	            SimpleDateFormat dataEUA = new SimpleDateFormat("yyyy-MM-dd");
+	            String datamysql = dataEUA.format(agora);
+	            stmt.setString(1, datamysql);
 
-			String sql = "select v.id,date_format(v.data_venda,'%d/%m/%Y %H:%i:%s') as data_formatada,c.nome,v.total_venda,v.observacoes,v.lucro,v.desconto,v.forma_pagamento from tb_vendas as v "
-					+ "inner join tb_clientes as c on (v.cliente_id = c.id) where date(data_venda) = ?";
+	            try (ResultSet rs = stmt.executeQuery()) {
+	                while (rs.next()) {
+	                    Vendas obj = new Vendas();
+	                    Clientes c = new Clientes();
 
-			PreparedStatement stmt = con.prepareStatement(sql);
-			stmt.setString(1, datamysql);
+	                    obj.setId(rs.getInt("v.id"));
+	                    obj.setData_venda(rs.getString("data_formatada"));
+	                    c.setNome(rs.getString("c.nome"));
+	                    obj.setTotal_venda(rs.getDouble("v.total_venda"));
+	                    obj.setObs(rs.getString("v.observacoes"));
+	                    obj.setLucro(rs.getDouble("v.lucro"));
+	                    obj.setDesconto(rs.getDouble("v.desconto"));
+	                    obj.setFormaPagamento(rs.getString("v.forma_pagamento"));
 
-			ResultSet rs = stmt.executeQuery();
+	                    obj.setCliente(c);
 
-			while (rs.next()) {
-				Vendas obj = new Vendas();
-				Clientes c = new Clientes();
+	                    lista.add(obj);
+	                }
+	            }
 
-				obj.setId(rs.getInt("v.id"));
-				obj.setData_venda(rs.getString("data_formatada"));
-				c.setNome(rs.getString("c.nome"));
-				obj.setTotal_venda(rs.getDouble("v.total_venda"));
-				obj.setObs(rs.getString("v.observacoes"));
-				obj.setLucro(rs.getDouble("v.lucro"));
-				obj.setDesconto(rs.getDouble("v.desconto"));
-				obj.setFormaPagamento(rs.getString("v.forma_pagamento"));
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
 
-				obj.setCliente(c);
-
-				lista.add(obj);
-
-			}
-
-			return lista;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+	        return lista;
+	    }
 
 	public List<Vendas> totalPorPeriodo(Date data_inicio, Date data_fim) {
 		List<Vendas> lista = new ArrayList<>();
