@@ -18,10 +18,16 @@ import javax.swing.JOptionPane;
 public class ClientesDAO {
 
     private Connection con;
+    private ConectionDataBases connectionFactory;
 
-    public ClientesDAO() throws ClassNotFoundException {
-    	  this.con = new ConectionDataBases().getConectionDataBases();
-
+    public ClientesDAO(String dataBaseNames) throws ClassNotFoundException {
+    	 // Inicialize a conexão com o banco de dados
+        this.connectionFactory = new ConectionDataBases(dataBaseNames);
+        try {
+            this.con = connectionFactory.getConectionDataBases();
+        } catch (SQLException e) {
+            e.printStackTrace(); // Trate a exceção conforme necessário
+        }
     }
 
     //Metodo consultar Cliente//

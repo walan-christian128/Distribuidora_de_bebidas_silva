@@ -10,10 +10,16 @@ import java.util.List;
 import Conexao.ConectionDataBases;
 
 public class dataBsesDAO {
-    private Connection con;
+	 private Connection con;
+	 private ConectionDataBases connectionFactory;
 
-    public dataBsesDAO() throws ClassNotFoundException {
-        this.con = new ConectionDataBases().getConectionDataBases();
+    public dataBsesDAO(String dataBaseNames) throws ClassNotFoundException {
+    	 this.connectionFactory = new ConectionDataBases(dataBaseNames);
+	        try {
+	            this.con = connectionFactory.getConectionDataBases();
+	        } catch (SQLException e) {
+	            e.printStackTrace(); // Trate a exceção conforme necessário
+	        }
        
     }
 

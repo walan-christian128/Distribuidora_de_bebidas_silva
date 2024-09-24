@@ -245,8 +245,8 @@ public class vendasServer extends HttpServlet {
 						String qtdProd = linha.getString("qtdProd");
 						String subItens = linha.getString("subtotal");
 
-						ProdutosDAO dao_produto = new ProdutosDAO();
-						itensVendaDAO daoitem = new itensVendaDAO();
+						ProdutosDAO dao_produto = new ProdutosDAO(empresa);
+						itensVendaDAO daoitem = new itensVendaDAO(empresa);
 						Produtos objp = new Produtos();
 						ItensVenda itens = new ItensVenda();
 
@@ -387,11 +387,13 @@ public class vendasServer extends HttpServlet {
 		String cpfCli = request.getParameter("cliCpf");
 		String idProdStr = request.getParameter("idProd");
 		int idProd = Integer.parseInt(idProdStr);
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa");
 
 		Produtos prod = new Produtos();
-		ProdutosDAO prodDAO = new ProdutosDAO();
+		ProdutosDAO prodDAO = new ProdutosDAO(empresa);
 		Clientes cli = new Clientes();
-		ClientesDAO cliDAO = new ClientesDAO();
+		ClientesDAO cliDAO = new ClientesDAO(empresa);
 
 		try {
 
@@ -413,7 +415,7 @@ public class vendasServer extends HttpServlet {
 		} catch (Exception e) {
 
 		}
-		HttpSession session = request.getSession();
+		
 		session.isNew();
 
 	}

@@ -6,8 +6,12 @@
 <%@ page import="DAO.ProdutosDAO"%>
 
 <%
+String empresa = (String) session.getAttribute("empresa");
+if (empresa == null || empresa.isEmpty()) {
+    throw new RuntimeException("O nome da empresa não está definido na sessão.");
+}
 List<Fornecedores> lista;
-FornecedoresDAO dao = new FornecedoresDAO();
+FornecedoresDAO dao = new FornecedoresDAO(empresa);
 lista = dao.listaFornecedores();
 %>
 <!DOCTYPE html>

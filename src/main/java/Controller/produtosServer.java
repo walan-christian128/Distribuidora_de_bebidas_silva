@@ -8,8 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-
+import jakarta.servlet.http.HttpSession;
 import DAO.ProdutosDAO;
 import Model.Fornecedores;
 import Model.Produtos;
@@ -17,11 +16,9 @@ import Model.Produtos;
 /**
  * Servlet implementation class produtosServer
  */
-@WebServlet(urlPatterns = {"/main", "/insert", "/select", "/update", "/delete" })
+@WebServlet(urlPatterns = { "/main", "/insert", "/select", "/update", "/delete" })
 public class produtosServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	ProdutosDAO dao = new ProdutosDAO();
-	Produtos prod = new Produtos();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -41,11 +38,18 @@ public class produtosServer extends HttpServlet {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 		String action = request.getServletPath();
 		System.out.println(action);
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
 
 		if (action.equals("/insert")) {
 			CadastrandoProdutos(request, response);
 		} else if (action.equals("/select")) {
-			listandoProduto(request, response);
+			try {
+				listandoProduto(request, response);
+			} catch (ClassNotFoundException | ServletException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if (action.equals("/delete")) {
 			ApagarProdutos(request, response);
 		} else {
@@ -55,7 +59,11 @@ public class produtosServer extends HttpServlet {
 	}
 
 	private void listandoProduto(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
+		Produtos prod = new Produtos();
+		ProdutosDAO dao = new ProdutosDAO(empresa);
 		String idProduto = request.getParameter("id");
 		try {
 			prod.setId(Integer.parseInt(idProduto));
@@ -77,7 +85,12 @@ public class produtosServer extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
+
 		try {
+			Produtos prod = new Produtos();
+			ProdutosDAO dao = new ProdutosDAO(empresa);
 			// Restante do código para setar os valores em "prod"
 			prod.setId(Integer.parseInt(request.getParameter("id")));
 			prod.setDescricao(request.getParameter("descricao"));
@@ -121,34 +134,40 @@ public class produtosServer extends HttpServlet {
 
 	protected void CadastrandoProdutos(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		     String prodDescricao = request.getParameter("descricao");
-	     if(prodDescricao !=null &&!prodDescricao.trim().isEmpty()) {
-		try {
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
+		String prodDescricao = request.getParameter("descricao");
+		if (prodDescricao != null && !prodDescricao.trim().isEmpty()) {
 			
-			prod.setDescricao(prodDescricao);
-			prod.setPreco_de_compra(Double.parseDouble(request.getParameter("preco_de_compra")));
-			prod.setPreco_de_venda(Double.parseDouble(request.getParameter("preco_de_venda")));
-			prod.setQtd_estoque(Integer.parseInt(request.getParameter("qtd_estoque")));
-			Fornecedores fornecedores = new Fornecedores();
-			fornecedores.setId(Integer.parseInt(request.getParameter("for_id")));
-			prod.setFornecedor(fornecedores);
-			dao.cadastrar(prod);
-			response.sendRedirect("Produtos.jsp");
+			try {
+				Produtos prod = new Produtos();
+				ProdutosDAO dao = new ProdutosDAO(empresa);
+				prod.setDescricao(prodDescricao);
+				prod.setPreco_de_compra(Double.parseDouble(request.getParameter("preco_de_compra")));
+				prod.setPreco_de_venda(Double.parseDouble(request.getParameter("preco_de_venda")));
+				prod.setQtd_estoque(Integer.parseInt(request.getParameter("qtd_estoque")));
+				Fornecedores fornecedores = new Fornecedores();
+				fornecedores.setId(Integer.parseInt(request.getParameter("for_id")));
+				prod.setFornecedor(fornecedores);
+				dao.cadastrar(prod);
+				response.sendRedirect("Produtos.jsp");
 
-			
-		} catch (Exception e) {
-		
+			} catch (Exception e) {
+
+			}
 		}
-	     }
-	      
+
 	}
 
 	protected void ApagarProdutos(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
 		String id = request.getParameter("id");
 		if (id != null) {
 			try {
-
+				Produtos prod = new Produtos();
+				ProdutosDAO dao = new ProdutosDAO(empresa);
 				prod.setId(Integer.parseInt(id));
 				dao.excluir(prod);
 				response.sendRedirect("Produtos.jsp");

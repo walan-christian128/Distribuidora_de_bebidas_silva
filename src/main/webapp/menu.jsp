@@ -5,6 +5,7 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="Model.ItensVenda"%>
 <%
+
 Vendas vendasDia = new Vendas();
 String totalVenda = request.getAttribute("totalVenda") != null ? request.getAttribute("totalVenda").toString() : "";
 String data = request.getAttribute("data") != null ? request.getAttribute("data").toString() : "";
@@ -96,6 +97,11 @@ String data = request.getAttribute("data") != null ? request.getAttribute("data"
 						href="realizarVendas.jsp" style="font-size: 2rem;"> <span
 							class="icon"><i class="bi bi-receipt"></i></span> <span
 							class="txt-link">Vendas</span>
+					</a></li>
+					<li class="nav-item"><a class="nav-link active md-3"
+						href="detroyLogaut.jsp" style="font-size: 2rem;"> <span
+							class="icon"><i class="bi bi-box-arrow-right"></i></span> <span
+							class="txt-link">Sair</span>
 					</a></li>
 				</ul>
 			</div>

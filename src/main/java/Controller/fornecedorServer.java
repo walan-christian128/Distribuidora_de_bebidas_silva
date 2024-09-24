@@ -6,6 +6,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 
@@ -20,8 +22,7 @@ import Model.Fornecedores;
 public class fornecedorServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	Fornecedores obj = new Fornecedores();
-	FornecedoresDAO dao = new FornecedoresDAO();
+	
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -44,20 +45,46 @@ public class fornecedorServer extends HttpServlet {
 		String action = request.getServletPath();
 		System.out.println(action);
 		 if (action.equals("/insertFornecedor")) {
-		        CadastrarFornecedor(request, response);
+		        try {
+					CadastrarFornecedor(request, response);
+				} catch (ClassNotFoundException | ServletException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    } else if (action.equals("/atualizarFornecedor")) {
-		        atualizarFornecedor(request, response);
+		        try {
+					atualizarFornecedor(request, response);
+				} catch (ClassNotFoundException | ServletException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    } else if (action.equals("/selectFornecedor")) {
-		        modalSelect(request, response);
+		        try {
+					modalSelect(request, response);
+				} catch (ClassNotFoundException | ServletException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    }
 		    else if (action.equals("/apagar")) {
-		        apagarFornecedor(request, response);
+		        try {
+					apagarFornecedor(request, response);
+				} catch (ClassNotFoundException | ServletException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    }
 
 	}
 
-	private void apagarFornecedor(HttpServletRequest request, HttpServletResponse response)	throws ServletException, IOException {
+	private void apagarFornecedor(HttpServletRequest request, HttpServletResponse response)	throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
+		String idFornecedor = request.getParameter("id");
+		Fornecedores obj = new Fornecedores();
+		FornecedoresDAO dao = new FornecedoresDAO(empresa);
 		String id = request.getParameter("id");
+		
 		if(id != null) {
 			obj.setId(Integer.parseInt(id));
 			dao.excluirFornecedores(obj);
@@ -68,8 +95,12 @@ public class fornecedorServer extends HttpServlet {
 	}
 
 	private void modalSelect(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-	  String idFornecedor = request.getParameter("id");
+			throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
+		String idFornecedor = request.getParameter("id");
+		Fornecedores obj = new Fornecedores();
+		FornecedoresDAO dao = new FornecedoresDAO(empresa);
 
 		try {
 			obj.setId(Integer.parseInt(idFornecedor));
@@ -110,7 +141,12 @@ public class fornecedorServer extends HttpServlet {
 	}
 
 	private void atualizarFornecedor(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
+		String idFornecedor = request.getParameter("id");
+		Fornecedores obj = new Fornecedores();
+		FornecedoresDAO dao = new FornecedoresDAO(empresa);
 		try {
 			String idFornec = request.getParameter("id");
 			if (idFornec != null && !idFornec.trim().isEmpty()) {
@@ -175,7 +211,12 @@ public class fornecedorServer extends HttpServlet {
 	}
 
 	private void CadastrarFornecedor(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa");
+		String idFornecedor = request.getParameter("id");
+		Fornecedores obj = new Fornecedores();
+		FornecedoresDAO dao = new FornecedoresDAO(empresa);
 		String fornecNome = request.getParameter("nome");
 		if (fornecNome != null && !fornecNome.trim().isEmpty()) {
 			try {

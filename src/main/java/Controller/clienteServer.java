@@ -6,6 +6,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 
@@ -20,8 +22,7 @@ import Model.Clientes;
 public class clienteServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	Clientes obj = new Clientes();
-	ClientesDAO dao = new ClientesDAO();
+	
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -38,27 +39,77 @@ public class clienteServer extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
-
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa"); 
 		
 
 		String action = request.getServletPath();
 		System.out.println(action);
 		 if (action.equals("/insertClientes")) {
-		        CadastrarClientes(request, response);
+		        try {
+					CadastrarClientes(request, response);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ServletException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    } else if (action.equals("/atualizarClientes")) {
-		        atualizarClientes(request, response);
+		        try {
+					atualizarClientes(request, response);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ServletException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    } else if (action.equals("/selectClientes")) {
-		        modalSelect(request, response);
+		        try {
+					modalSelect(request, response);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ServletException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    }
 		    else if (action.equals("/apagarClientes")) {
-		        apagarFornecedor(request, response);
+		        try {
+					apagarFornecedor(request, response);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ServletException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    }
 
 	}
 	
 	
 
-	private void apagarFornecedor(HttpServletRequest request, HttpServletResponse response)	throws ServletException, IOException {
+	private void apagarFornecedor(HttpServletRequest request, HttpServletResponse response)	throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa"); 
+		Clientes obj = new Clientes();
+		ClientesDAO dao = new ClientesDAO(empresa);
+		
 		String id = request.getParameter("id");
 		if(id != null) {
 			obj.setId(Integer.parseInt(id));
@@ -70,7 +121,11 @@ public class clienteServer extends HttpServlet {
 	}
 
 	private void modalSelect(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa"); 
+		Clientes obj = new Clientes();
+		ClientesDAO dao = new ClientesDAO(empresa);
 	  String idFornecedor = request.getParameter("id");
 
 		try {
@@ -112,7 +167,11 @@ public class clienteServer extends HttpServlet {
 	}
 
 	private void atualizarClientes(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa"); 
+		Clientes obj = new Clientes();
+		ClientesDAO dao = new ClientesDAO(empresa);
 		try {
 			String idCli = request.getParameter("id");
 			if (idCli != null && !idCli.trim().isEmpty()) {
@@ -177,7 +236,11 @@ public class clienteServer extends HttpServlet {
 	}
 
 	private void CadastrarClientes(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws ServletException, IOException, ClassNotFoundException {
+		HttpSession session = request.getSession();
+        String empresa = (String) session.getAttribute("empresa"); 
+		Clientes obj = new Clientes();
+		ClientesDAO dao = new ClientesDAO(empresa);
 		String cliNome = request.getParameter("nome");
 		if (cliNome != null && !cliNome.trim().isEmpty()) {
 			try {

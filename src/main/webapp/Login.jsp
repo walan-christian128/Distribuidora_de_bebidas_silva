@@ -123,7 +123,7 @@ String erro = (String) request.getAttribute("erro");
 
 						</div>
 
-						<a href="RecuperaSenha.html" class="ls-login-forgot">Esqueci minha senha</a>
+						<a href="RecuperarSenha.jsp" class="ls-login-forgot">Esqueci minha senha</a>
 
 
 			

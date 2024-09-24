@@ -14,9 +14,16 @@ import Model.Produtos;
 
 public class itensVendaDAO {
 	private Connection con;
+	 private ConectionDataBases connectionFactory;
 
-    public itensVendaDAO() throws ClassNotFoundException {
-    	  this.con = new ConectionDataBases().getConectionDataBases();
+    public itensVendaDAO(String dataBaseNames) throws ClassNotFoundException {
+    	  // Inicialize a conexão com o banco de dados
+        this.connectionFactory = new ConectionDataBases(dataBaseNames);
+        try {
+            this.con = connectionFactory.getConectionDataBases();
+        } catch (SQLException e) {
+            e.printStackTrace(); // Trate a exceção conforme necessário
+        }
 
     }
 

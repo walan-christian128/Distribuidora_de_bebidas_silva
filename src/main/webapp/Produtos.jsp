@@ -10,14 +10,18 @@
 <%@ page import="DAO.VendasDAO"%>
 
 <%
+String empresa = (String) session.getAttribute("empresa");
+if (empresa == null || empresa.isEmpty()) {
+    throw new RuntimeException("O nome da empresa não está definido na sessão.");
+}
 List<Fornecedores> lista; // Declara a lista
-FornecedoresDAO dao = new FornecedoresDAO();
+FornecedoresDAO dao = new FornecedoresDAO(empresa);
 lista = dao.listaFornecedores(); // Atribui o resultado da busca à lista exibida no select
 %>
 
 <%
 List<Produtos> prodp; // Declara a lista
-ProdutosDAO daop = new ProdutosDAO();
+ProdutosDAO daop = new ProdutosDAO(empresa);
 prodp = daop.listarProdutos(); // Atribui o resultado da busca à lista exibida na tabela
 %>
 <%
@@ -28,7 +32,7 @@ Vendas vd = new Vendas();
 %>
 <%
 List<Vendas> listaVenda;
-VendasDAO Vdao = new VendasDAO();
+VendasDAO Vdao = new VendasDAO(empresa);
 listaVenda = Vdao.listarVendasdoDia();
 %>
 

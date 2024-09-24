@@ -137,10 +137,8 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 								<label for="qtdProd" class="form-label">QTD: </label> <input
 									type="number" class="form-control " id="qtdProd" name="qtdProd"
 									required
-									value="<%=request.getAttribute("qtdProd") != null ? request.getAttribute("qtdProd").toString() : ""%>">
-									<div class="invalid-feedback">
-									     A quantidade é obrigatória.
-									</div>
+									value="<%=request.getAttribute("qtdProd") != null ? request.getAttribute("qtdProd").toString() : "0"%>">
+									
 							</div>
 						</div>
 						<div class="col-md-6">

@@ -6,8 +6,12 @@
 <%@ page import="java.util.ArrayList"%>
 
 <%
+String empresa = (String) session.getAttribute("empresa");
+if (empresa == null || empresa.isEmpty()) {
+    throw new RuntimeException("O nome da empresa não está definido na sessão.");
+}
 List<Clientes> lista; // Declara a lista
-ClientesDAO dao = new ClientesDAO();
+ClientesDAO dao = new ClientesDAO(empresa);
 lista = dao.listaClientes();
 %>
 <%
