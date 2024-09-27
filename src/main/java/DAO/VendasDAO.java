@@ -38,15 +38,22 @@ public class VendasDAO {
 
 	public void cadastrarVenda(Vendas obj) {
 		try {
+			System.out.println("VendasDAO.cadastrarVenda - Cliente: " + obj.getCliente());
 
-			String sql = "insert into tb_vendas(cliente_id,data_venda,total_venda,lucro,observacoes,desconto,forma_pagamento)values(?,?,?,?,?,?,?)";
+			String sql = "insert into tb_vendas(cliente_id,data_venda,total_venda,observacoes,lucro,desconto,forma_pagamento)values(?,?,?,?,?,?,?)";
 			PreparedStatement stmt = con.prepareStatement(sql);
 
-			stmt.setInt(1, obj.getCliente().getId());
+			if (obj.getCliente() != null) {
+				// Define o cliente_id normalmente
+				stmt.setInt(1, obj.getCliente().getId());
+			} else {
+				// Define NULL para cliente_id se não houver cliente
+				stmt.setNull(1, java.sql.Types.INTEGER);
+			}
 			stmt.setString(2, obj.getData_venda());
 			stmt.setDouble(3, obj.getTotal_venda());
-			stmt.setDouble(4, obj.getLucro());
-			stmt.setString(5, obj.getObs());
+			stmt.setString(4, obj.getObs());
+			stmt.setDouble(5, obj.getLucro());
 			stmt.setDouble(6, obj.getDesconto());
 			stmt.setString(7, obj.getformaPagamento());
 

@@ -43,11 +43,10 @@ import Model.Vendas;
  */
 
 @WebServlet(urlPatterns = { "/selecionarClienteProdutos", "/inserirItens", "/InseirVendaEintens", "/PeriodoVenda",
-		"/dia","/maisVendidos" })
+		"/dia", "/maisVendidos" })
 
 public class vendasServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
 
 	double total, subtotal, lucro, preco, meuPreco;
 
@@ -64,119 +63,114 @@ public class vendasServer extends HttpServlet {
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // Obtendo a sessão
-        HttpSession session = request.getSession();
-        String empresa = (String) session.getAttribute("empresa"); // Exemplo de atributo de sessão
+			throws ServletException, IOException {
+		// Obtendo a sessão
+		HttpSession session = request.getSession();
+		String empresa = (String) session.getAttribute("empresa"); // Exemplo de atributo de sessão
 
-        // Agora, você pode usar o valor da "empresa" em qualquer parte do seu código
-        if (empresa != null) {
-            System.out.println("Empresa selecionada: " + empresa);
-        } else {
-            System.out.println("Nenhuma empresa selecionada.");
-        }
+		// Agora, você pode usar o valor da "empresa" em qualquer parte do seu código
+		if (empresa != null) {
+			System.out.println("Empresa selecionada: " + empresa);
+		} else {
+			System.out.println("Nenhuma empresa selecionada.");
+		}
 
-        String action = request.getServletPath();
-        switch (action) {
-            case "/selecionarClienteProdutos":
-                try {
-                    selecionarClienteProd(request, response);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case "/inserirItens":
-                inserirItens(request, response);
-                break;
-            case "/InseirVendaEintens":
-                inserirVendas(request, response);
-                break;
-            case "/PeriodoVenda":
-                vendaPorPeriodo(request, response);
-                break;
-            case "/dia":
-                vendaPorDia(request, response);
-                break;
-            case "/maisVendidos":
-                maisVendidos(request, response);
-                break;
-            default:
-                response.getWriter().append("Ação não reconhecida.");
-                break;
-        }
-    }
+		String action = request.getServletPath();
+		switch (action) {
+		case "/selecionarClienteProdutos":
+			try {
+				selecionarClienteProd(request, response);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			break;
+		case "/inserirItens":
+			inserirItens(request, response);
+			break;
+		case "/InseirVendaEintens":
+			inserirVendas(request, response);
+			break;
+		case "/PeriodoVenda":
+			vendaPorPeriodo(request, response);
+			break;
+		case "/dia":
+			vendaPorDia(request, response);
+			break;
+		case "/maisVendidos":
+			maisVendidos(request, response);
+			break;
+		default:
+			response.getWriter().append("Ação não reconhecida.");
+			break;
+		}
+	}
 
-	private void maisVendidos(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void maisVendidos(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String dataVendainicio = request.getParameter("dataVendainicio");
 		String dataVendafim = request.getParameter("dataVendafim");
-		
+
 		HttpSession session = request.getSession();
-        String empresa = (String) session.getAttribute("empresa");
-		
-	        if(dataVendainicio !=null && dataVendafim !=null) {
-	        	String fomatoData = "dd/MM/yyyy";
-				SimpleDateFormat sdf = new SimpleDateFormat(fomatoData);
-				
-	        	try {
-	        		Date datainicalFormata = sdf.parse(dataVendainicio);
-					Date datafinalFormata = sdf.parse(dataVendafim);
-					VendasDAO dao = new VendasDAO(empresa);
-					
-					ArrayList<ItensVenda> lista_2 = (ArrayList<ItensVenda>) dao.maisVendidos(datainicalFormata,
-							datafinalFormata);
-				
-					 request.setAttribute("maisVendidos", lista_2);
-					 
-					 RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
-			         dispatcher.forward(request, response);
-					
-				
-					
-					
-					
-					
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-	        	
-	        	
-	        }
-		
+		String empresa = (String) session.getAttribute("empresa");
+
+		if (dataVendainicio != null && dataVendafim != null) {
+			String fomatoData = "dd/MM/yyyy";
+			SimpleDateFormat sdf = new SimpleDateFormat(fomatoData);
+
+			try {
+				Date datainicalFormata = sdf.parse(dataVendainicio);
+				Date datafinalFormata = sdf.parse(dataVendafim);
+				VendasDAO dao = new VendasDAO(empresa);
+
+				ArrayList<ItensVenda> lista_2 = (ArrayList<ItensVenda>) dao.maisVendidos(datainicalFormata,
+						datafinalFormata);
+
+				request.setAttribute("maisVendidos", lista_2);
+
+				RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
+				dispatcher.forward(request, response);
+
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+
+		}
+
 	}
 
 	private void vendaPorDia(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String data = request.getParameter("data");
-		
+
 		HttpSession session = request.getSession();
-        String empresa = (String) session.getAttribute("empresa");
-        
-        try {
-            SimpleDateFormat dataVenda = new SimpleDateFormat("dd/MM/yyyy");
-            Date dataVendaInf = dataVenda.parse(data);
+		String empresa = (String) session.getAttribute("empresa");
 
-            VendasDAO dao = new VendasDAO(empresa);
-            double totalVenda = dao.retornaTotalVendaPorData(dataVendaInf);
+		try {
+			SimpleDateFormat dataVenda = new SimpleDateFormat("dd/MM/yyyy");
+			Date dataVendaInf = dataVenda.parse(data);
 
-            request.setAttribute("totalVenda", totalVenda);
-            request.setAttribute("data", data);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
-            dispatcher.forward(request, response);
+			VendasDAO dao = new VendasDAO(empresa);
+			double totalVenda = dao.retornaTotalVendaPorData(dataVendaInf);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Handle exception appropriately
-        }
-    
+			request.setAttribute("totalVenda", totalVenda);
+			request.setAttribute("data", data);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("menu.jsp");
+			dispatcher.forward(request, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			// Handle exception appropriately
+		}
+
 	}
 
 	private void vendaPorPeriodo(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String dataInicial = request.getParameter("dataInicial");
 		String dataFinal = request.getParameter("dataFinal");
-		
+
 		HttpSession session = request.getSession();
-        String empresa = (String) session.getAttribute("empresa");
+		String empresa = (String) session.getAttribute("empresa");
 
 		if (dataInicial != null && dataFinal != null) {
 			String fomatoData = "dd/MM/yyyy";
@@ -194,110 +188,115 @@ public class vendasServer extends HttpServlet {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				
+
 			}
 		}
 	}
 
 	private void inserirVendas(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		HttpSession session = request.getSession();
-		  String empresa = (String) session.getAttribute("empresa");
-		  
+		String empresa = (String) session.getAttribute("empresa");
+
 		String idCli = request.getParameter("cliId");
-		int cliId = Integer.parseInt(idCli);
+		String dataVenda = request.getParameter("data");
+		String totalVenda = request.getParameter("totalVenda");
+		String Obs = request.getParameter("observacao");
+		String lucro = request.getParameter("lucro");
+		String desconto = request.getParameter("desconto");
+		String formaPagamento = request.getParameter("formaPagamento");
 
 		Vendas obj = new Vendas();
 
-		if (idCli != null && !idCli.trim().isEmpty()) {
-			try {
-				Clientes objCli = new Clientes();
+		try {
 
+			
+
+			Double lucro2 = Double.parseDouble(lucro);
+			if (idCli != null && !idCli.isEmpty() && !idCli.equals("0")) {
+				// Se houver ID do cliente, atribui ao objeto
+				Clientes objCli = new Clientes();
+				int cliId = Integer.parseInt(idCli);
 				objCli.setId(cliId);
 				obj.setCliente(objCli);
-
-				obj.setData_venda(request.getParameter("data"));
-				obj.setTotal_venda(Double.parseDouble(request.getParameter("totalVenda")));
-				obj.setObs(request.getParameter("observacao"));
-				obj.setLucro(Double.parseDouble(request.getParameter("lucro")));
-				obj.setDesconto(Double.parseDouble(request.getParameter("desconto")));
-				obj.setFormaPagamento(request.getParameter("formaPagamento"));
-
-				VendasDAO dao = new VendasDAO(empresa);
-				dao.cadastrarVenda(obj);
-
-				/* System.out.println("Cliente" + objCli.getId()); */
-				//// tabela vendas ok///itens sendo inseridos///não mexer
-
-				obj.setId(dao.retornaUltimaVenda());
-				/* System.out.println("ID da última venda: " + dao.retornaUltimaVenda()); */
-
-				JSONArray itensArray = (JSONArray) session.getAttribute("itens");
-				if (itensArray != null) {
-					for (int i = 0; i < itensArray.length(); i++) {
-						JSONObject linha = itensArray.getJSONObject(i);
-
-						total = 0.0;
-						lucro = 0.0;
-
-						String idProdVenda = linha.getString("idProd");
-						String qtdProd = linha.getString("qtdProd");
-						String subItens = linha.getString("subtotal");
-
-						ProdutosDAO dao_produto = new ProdutosDAO(empresa);
-						itensVendaDAO daoitem = new itensVendaDAO(empresa);
-						Produtos objp = new Produtos();
-						ItensVenda itens = new ItensVenda();
-
-						itens.setVenda(obj);
-						objp.setId(Integer.parseInt(idProdVenda));
-						itens.setProduto(objp);
-						itens.setQtd(Integer.parseInt(qtdProd));
-						itens.setSubtotal(Double.parseDouble(subItens));
-
-						int qtd_estoque, qtd_comprada, qtd_atualizada;
-						// Baixa no estoque
-						qtd_estoque = dao_produto.retornaEstoqueAtual(objp.getId());
-						qtd_comprada = Integer.parseInt(qtdProd);
-						qtd_atualizada = qtd_estoque - qtd_comprada;
-
-						dao_produto.baixarEstoque(objp.getId(), qtd_atualizada);
-
-						// Cadastrar o item de venda
-						daoitem.cadastraItem(itens);
-
-						/*
-						 * System.out.println("Codigo Produto " + idProdVenda);
-						 * System.out.println("Quantidade" + qtdProd);
-						 * System.out.println("Codigo Produto " + subItens);
-						 */
-
-						/* System.out.println("Total: " + total); */
-
-						// Faça o que precisar com os atributos
-
-					}
-
-					total = 0.0;
-					lucro = 0.0;
-					session.removeAttribute("totalVenda");
-
-					session.removeAttribute("itens");
-					session.removeAttribute("lucro");
-
-					response.sendRedirect("realizarVendas.jsp");
-
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
+			} else {
+				// Caso não haja ID do cliente, o objeto cliente será nulo
+				obj.setCliente(null); // Deixe claro que não há cliente
 			}
 
-			HttpSession newSession = request.getSession(true);
-			newSession.removeAttribute("totalVenda");
-		}
+			// Definindo os outros campos da venda
+			obj.setData_venda(dataVenda);
+			obj.setTotal_venda(Double.parseDouble(totalVenda));
+			obj.setObs(Obs);
+			obj.setLucro(Double.parseDouble(lucro));
+			obj.setDesconto(Double.parseDouble(desconto));
+			obj.setFormaPagamento(formaPagamento);
 
+			VendasDAO dao = new VendasDAO(empresa);
+			dao.cadastrarVenda(obj); // Aqui deve funcionar normalmente mesmo sem cliente
+
+			// Capturando o ID da venda recém-criada
+			obj.setId(dao.retornaUltimaVenda());
+
+			// Processando os itens da venda (mantido igual)
+			JSONArray itensArray = (JSONArray) session.getAttribute("itens");
+			if (itensArray != null) {
+				for (int i = 0; i < itensArray.length(); i++) {
+					JSONObject linha = itensArray.getJSONObject(i);
+
+					total = 0.0;
+					lucro2 = 0.0;
+
+					String idProdVenda = linha.getString("idProd");
+					String qtdProd = linha.getString("qtdProd");
+					String subItens = linha.getString("subtotal");
+
+					ProdutosDAO dao_produto = new ProdutosDAO(empresa);
+					itensVendaDAO daoitem = new itensVendaDAO(empresa);
+					Produtos objp = new Produtos();
+					ItensVenda itens = new ItensVenda();
+
+					itens.setVenda(obj); // Relaciona o item à venda
+					objp.setId(Integer.parseInt(idProdVenda));
+					itens.setProduto(objp);
+					itens.setQtd(Integer.parseInt(qtdProd));
+					itens.setSubtotal(Double.parseDouble(subItens));
+
+					int qtd_estoque, qtd_comprada, qtd_atualizada;
+					// Baixa no estoque
+					qtd_estoque = dao_produto.retornaEstoqueAtual(objp.getId());
+					qtd_comprada = Integer.parseInt(qtdProd);
+					qtd_atualizada = qtd_estoque - qtd_comprada;
+
+					dao_produto.baixarEstoque(objp.getId(), qtd_atualizada);
+
+					// Cadastrar o item de venda
+					daoitem.cadastraItem(itens);
+				}
+
+				total = 0.0;
+				lucro2 = 0.0;
+				session.removeAttribute("totalVenda");
+				session.removeAttribute("itens");
+				session.removeAttribute("lucro");
+
+				response.sendRedirect("realizarVendas.jsp");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Cliente ID: " + idCli);
+		System.out.println("Data Venda: " + dataVenda);
+		System.out.println("Total Venda: " + totalVenda);
+		System.out.println("Observação: " + Obs);
+		System.out.println("Lucro: " + lucro);
+		System.out.println("Desconto: " + desconto);
+		System.out.println("Forma de Pagamento: " + formaPagamento);
+
+		HttpSession newSession = request.getSession(true);
+		newSession.removeAttribute("totalVenda");
 	}
 
 	private void inserirItens(HttpServletRequest request, HttpServletResponse response)
@@ -388,7 +387,7 @@ public class vendasServer extends HttpServlet {
 		String idProdStr = request.getParameter("idProd");
 		int idProd = Integer.parseInt(idProdStr);
 		HttpSession session = request.getSession();
-        String empresa = (String) session.getAttribute("empresa");
+		String empresa = (String) session.getAttribute("empresa");
 
 		Produtos prod = new Produtos();
 		ProdutosDAO prodDAO = new ProdutosDAO(empresa);
@@ -415,7 +414,7 @@ public class vendasServer extends HttpServlet {
 		} catch (Exception e) {
 
 		}
-		
+
 		session.isNew();
 
 	}

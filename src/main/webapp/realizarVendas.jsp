@@ -60,11 +60,9 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 									required
 									value="<%=request.getAttribute("cliId") != null ? request.getAttribute("cliId").toString() : ""%>"
 									readonly>
-									<div class="invalid-feedback">
-									     Código é obrigatório.
-									</div>
-									
-									
+								<div class="invalid-feedback">Código é obrigatório.</div>
+
+
 							</div>
 							<div class="col-md-6">
 								<label for="dataProd" class="form-label d-flex">Data: </label> <input
@@ -81,13 +79,10 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 						</div>
 						<div class="col-md-6">
 							<label for="validationCustom01" class="form-label">CPF: </label>
-							<input type="text" class="form-control" id="validationCustom01"
-								name="cliCpf" required
-								value="<%=request.getAttribute("cliCpf") != null ? request.getAttribute("cliCpf").toString() : ""%><%clientes.getCpf();%>" >
-								<div class="invalid-feedback">
-								    CPF Obrigatorio
-								
-								</div>
+							<input type="text" class="form-control" id="cliCpf" name="cliCpf"
+								required
+								value="<%=request.getAttribute("cliCpf") != null ? request.getAttribute("cliCpf").toString() : ""%><%clientes.getCpf();%>">
+							<div class="invalid-feedback">CPF Obrigatorio</div>
 						</div>
 						<div class="col-md-6">
 							<label for="cliEndereco" class="form-label">Endereço: </label> <input
@@ -105,6 +100,12 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 						</div>
 						<div></div>
 					</div>
+					<div class="form-check mb-3">
+						<input class="form-check-input" type="checkbox"
+							id="semClienteCheckbox" onclick="toggleClienteFields(this)">
+						<label class="form-check-label" for="semClienteCheckbox">
+							Sem Cliente </label>
+					</div>
 				</div>
 				<div id="Produtos">
 					<div class="col-md-8">
@@ -114,9 +115,8 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 							</label> <input type="text" class="form-control " id="idProd"
 								name="idProd" required
 								value="<%=request.getAttribute("idProd") != null ? request.getAttribute("idProd").toString() : ""%><%produtos.getId();%>">
-								<div class="invalid-feedback">
-									     Codigo do Produto é obrigatório.
-									</div>
+							<div class="invalid-feedback">Codigo do Produto é
+								obrigatório.</div>
 						</div>
 						<div>
 							<label for="desProd" class="form-label">Descricão: </label> <input
@@ -138,7 +138,7 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 									type="number" class="form-control " id="qtdProd" name="qtdProd"
 									required
 									value="<%=request.getAttribute("qtdProd") != null ? request.getAttribute("qtdProd").toString() : "0"%>">
-									
+
 							</div>
 						</div>
 						<div class="col-md-6">
@@ -368,12 +368,16 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 
 	<!-- Bootstrap JavaScript Bundle com Popper -->
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
-<script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+	<script>
 		var totalValue = 0;
 		var lucroValue = 0;
 		var pegarTotal = 0;
@@ -618,7 +622,7 @@ document.getElementById("carrinho").addEventListener("click", function(event) {
         }
     });
 </script>
-<script>
+	<script>
     // Verificar a validade do formulário ao enviar
     (function () {
         'use strict'
@@ -644,6 +648,54 @@ document.getElementById("carrinho").addEventListener("click", function(event) {
         form.classList.add('was-validated');
     });
 </script>
+	<script>
+    function toggleClienteFields() {
+        var checkbox = document.getElementById('semClienteCheckbox');
+        var clienteFields = [
+            'cliId',
+            'cliNome',
+            'cliCpf',
+            'cliEndereco',
+            'cliNumero'
+        ];
+
+        clienteFields.forEach(function(fieldId) {
+            var field = document.getElementById(fieldId);
+            if (field) {
+                field.disabled = checkbox.checked;
+                if (checkbox.checked) {
+                    field.value = ""; // Limpa o valor do campo
+                    if (field.id === 'cliId') {
+                        field.removeAttribute('name'); // Remove o name para evitar envio
+                    }
+                } else {
+                    if (field.id === 'cliId') {
+                        field.setAttribute('name', 'cliId'); // Reatribui o name
+                    }
+                }
+            }
+        });
+
+        // Salva o estado do checkbox no localStorage
+        localStorage.setItem('semClienteChecked', checkbox.checked);
+    }
+
+    // Função para restaurar o estado ao carregar a página
+    window.onload = function() {
+        var checkbox = document.getElementById('semClienteCheckbox');
+        var semClienteChecked = localStorage.getItem('semClienteChecked');
+
+        if (semClienteChecked !== null) {
+            checkbox.checked = semClienteChecked === 'true';
+            toggleClienteFields();
+        }
+    };
+</script>
+
+
+
+	
+
 
 
 
