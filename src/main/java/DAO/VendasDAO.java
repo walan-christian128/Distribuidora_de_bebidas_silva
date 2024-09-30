@@ -141,7 +141,7 @@ public class VendasDAO {
 	        String sql = "select v.id, date_format(v.data_venda, '%d/%m/%Y %H:%i:%s') as data_formatada, "
 	                   + "c.nome, v.total_venda, v.observacoes, v.lucro, v.desconto, v.forma_pagamento "
 	                   + "from tb_vendas as v "
-	                   + "inner join tb_clientes as c on (v.cliente_id = c.id) "
+	                   + "left join tb_clientes as c on (v.cliente_id = c.id) "
 	                   + "where date(v.data_venda) = ?";
 
 	        try (PreparedStatement stmt = con.prepareStatement(sql)) {

@@ -89,7 +89,7 @@ request.setAttribute("totalVendido", totalVendasDia);
 				%>
 				<tr id="<%=lista.get(i).getId()%>" class="linha-editar"
 					data-id="<%=lista.get(i).getId()%>">
-					<td><a href="selecionarVenda?id=<%=lista.get(i).getId()%>"><%=lista.get(i).getCliente().getNome()%></a></td>
+					<td><a href="selecionarVenda?id=<%=lista.get(i).getId()%>"><%=lista.get(i).getCliente() != null && lista.get(i).getCliente().getNome() != null ? lista.get(i).getCliente().getNome() : "" %></a></td>
 					<td><a href="selecionarVenda?id=<%=lista.get(i).getId()%>"><%=lista.get(i).getData_venda()%></a></td>
 					<td><a href="selecionarVenda?id=<%=lista.get(i).getId()%>"><%=lista.get(i).getTotal_venda()%></a></td>
 					<td><a href="selecionarVenda?id=<%=lista.get(i).getId()%>"><%=lista.get(i).getObs()%></a></td>
