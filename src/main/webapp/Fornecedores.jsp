@@ -52,20 +52,26 @@ td a {
 		<div id="form-container" class="form-control form-control-sm m-0 text-dark">
 			<h2>Cadastro/Edição de Fornecedores</h2>
 			<form action="insertFornecedor" name="cadastroFornecedores"
-				method="post" class="form-inline">
+				method="post" class="form-inline needs-validation" id="cadastroFornecedores">
 
 
 				<div class="mb-3">
 					<label for="id" class="form-label">Código</label> <input
 						type="text" id="id" class="form-control " name="id" disabled>
 				</div>
+				
+				
+				
 
 
 				<div class="mb-3">
 
 					<label for="nome" class="form-label">Nome:</label> <input
 						type="text" id="nome" class="form-control" name="nome" required>
+						
+						<div class="invalid-feedback">Campo Obrigatório</div>
 				</div>
+				
 
 				<div class="mb-3">
 					<label for="cnpj" class="form-label">Cnpj:</label> <input
@@ -352,8 +358,34 @@ $(document).ready(function() {
       $('#telefone').mask('(00) - 0000-0000');
       $('#celular').mask('(00) - 00000-0000');
       $('#cep').mask('00.000-000');
-      $('#cpf').mask('000.000.000-00');
+      $('#cnpj').mask('00.000.000/0000-00');
       });
+</script>
+<script>
+    // Verificar a validade do formulário ao enviar
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })();
+
+    // Verificar validade dos campos no botão "Adicionar item"
+    document.getElementById("addItemBtn").addEventListener("click", function (event) {
+        var form = document.getElementById('cadastroFornecedores');
+        if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+        }
+        form.classList.add('was-validated');
+    });
 </script>
 </body>
 </html>

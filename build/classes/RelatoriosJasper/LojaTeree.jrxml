@@ -1,0 +1,95 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="LojaTeree" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bd077da5-8180-48d2-ab34-2ff063db98eb">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="277"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="713"/>
+	<parameter name="ID_VENDA" class="java.lang.Integer"/>
+	<query language="sql"><![CDATA[SELECT tb_vendas.id codigo, tb_clientes.nome AS Nome, tb_clientes.celular AS Celular, 
+                      tb_clientes.endereco AS Endereço, tb_clientes.numero AS Numero, tb_clientes.bairro AS Bairro, 
+                      tb_clientes.cidade AS Cidade, tb_itensvendas.subtotal AS SubTotal, tb_produtos.descricao AS Descrição,    
+                      tb_vendas.total_venda AS Total_Da_Venda    
+                      FROM tb_produtos    
+                      INNER JOIN tb_itensvendas ON tb_produtos.id = tb_itensvendas.produto_id    
+                      INNER JOIN tb_vendas ON tb_itensvendas.venda_id = tb_vendas.id    
+                      LEFT JOIN tb_clientes ON tb_vendas.cliente_id = tb_clientes.id    
+                      WHERE tb_vendas.id = $P{ID_VENDA} ]]></query>
+	<field name="codigo" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="id"/>
+		<property name="com.jaspersoft.studio.field.label" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_vendas"/>
+	</field>
+	<field name="Nome" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nome"/>
+		<property name="com.jaspersoft.studio.field.label" value="Nome"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_clientes"/>
+	</field>
+	<field name="Celular" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="celular"/>
+		<property name="com.jaspersoft.studio.field.label" value="Celular"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_clientes"/>
+	</field>
+	<field name="Endereço" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="endereco"/>
+		<property name="com.jaspersoft.studio.field.label" value="Endereço"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_clientes"/>
+	</field>
+	<field name="Numero" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="numero"/>
+		<property name="com.jaspersoft.studio.field.label" value="Numero"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_clientes"/>
+	</field>
+	<field name="Bairro" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="bairro"/>
+		<property name="com.jaspersoft.studio.field.label" value="Bairro"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_clientes"/>
+	</field>
+	<field name="Cidade" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cidade"/>
+		<property name="com.jaspersoft.studio.field.label" value="Cidade"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_clientes"/>
+	</field>
+	<field name="SubTotal" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="subtotal"/>
+		<property name="com.jaspersoft.studio.field.label" value="SubTotal"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_itensvendas"/>
+	</field>
+	<field name="Descrição" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="descricao"/>
+		<property name="com.jaspersoft.studio.field.label" value="Descrição"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_produtos"/>
+	</field>
+	<field name="Total_Da_Venda" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total_venda"/>
+		<property name="com.jaspersoft.studio.field.label" value="Total_Da_Venda"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_vendas"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="79" splitType="Stretch"/>
+	<pageHeader height="35" splitType="Stretch"/>
+	<columnHeader height="61" splitType="Stretch">
+		<element kind="staticText" uuid="5952702d-bfe2-4c77-afe3-2e5cea172f0b" x="90" y="0" width="100" height="30">
+			<text><![CDATA[Nome]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="14b9a36b-9ed0-42ec-ad0c-84afc09ed7cb"/>
+		</element>
+		<element kind="staticText" uuid="c1d82aa0-2de5-46e7-91a8-7699e45a28ea" x="190" y="0" width="100" height="30">
+			<text><![CDATA[Total_Da_Venda]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aad35a13-bf90-4cd0-930a-5b8f19748fc1"/>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<element kind="textField" uuid="f43aec88-7713-4e65-8f22-4638217e2e63" x="90" y="10" width="100" height="30">
+				<expression><![CDATA[$F{Nome}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="14b9a36b-9ed0-42ec-ad0c-84afc09ed7cb"/>
+			</element>
+			<element kind="textField" uuid="870a9ef7-6ae5-4cc5-9dd5-f1e2de99c522" x="190" y="10" width="100" height="30">
+				<expression><![CDATA[$F{Total_Da_Venda}]]></expression>
+				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aad35a13-bf90-4cd0-930a-5b8f19748fc1"/>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>

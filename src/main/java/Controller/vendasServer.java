@@ -8,8 +8,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import net.sf.jasperreports.engine.JasperPrint;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -31,12 +34,16 @@ import com.google.gson.Gson;
 
 import DAO.ClientesDAO;
 import DAO.ProdutosDAO;
+import DAO.RelNotaVenda;
 import DAO.VendasDAO;
 import DAO.itensVendaDAO;
 import Model.Clientes;
 import Model.ItensVenda;
 import Model.Produtos;
 import Model.Vendas;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 
 /**
  * Servlet implementation class vendasServer
@@ -282,11 +289,33 @@ public class vendasServer extends HttpServlet {
 				session.removeAttribute("lucro");
 
 				response.sendRedirect("realizarVendas.jsp");
+				
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		try {
+		    // Gerar o relatório e armazenar como JasperPrint
+		    JasperPrint jasperPrint = new RelNotaVenda(empresa).gerarRelatorio("/src/main/WEB-INF/RelatoriosJasper/LojaTeree.jrxml", obj.getId());
+		    String layoutPath = getServletContext().getRealPath("/WEB-INF/RelatoriosJasper/LojaTeree.jrxml");
+		    System.out.println("Caminho do arquivo JRXML: " + layoutPath); // Para ver o caminho gerado
+		    
+		    File arquivoJrxml = new File(layoutPath);
+		    if (!arquivoJrxml.exists()) {
+		        throw new FileNotFoundException("Arquivo JRXML não encontrado em: " + layoutPath);
+		    }
+		    InputStream inputStream = new FileInputStream(arquivoJrxml);
+
+		    // Salvar o relatório na sessão para ser acessado no JSP
+		    session.setAttribute("relatorioVenda", jasperPrint);
+
+		    // Redirecionar para a página com o modal
+		    response.sendRedirect("realizarVendas.jsp?showModal=true");
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+
 		System.out.println("Cliente ID: " + idCli);
 		System.out.println("Data Venda: " + dataVenda);
 		System.out.println("Total Venda: " + totalVenda);
@@ -388,6 +417,7 @@ public class vendasServer extends HttpServlet {
 		int idProd = Integer.parseInt(idProdStr);
 		HttpSession session = request.getSession();
 		String empresa = (String) session.getAttribute("empresa");
+		
 
 		Produtos prod = new Produtos();
 		ProdutosDAO prodDAO = new ProdutosDAO(empresa);
@@ -419,10 +449,7 @@ public class vendasServer extends HttpServlet {
 
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 

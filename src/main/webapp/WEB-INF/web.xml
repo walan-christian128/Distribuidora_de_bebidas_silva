@@ -79,4 +79,14 @@
     <servlet-name>userLogin</servlet-name>
     <url-pattern>/userLogin</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>relatorioServer</display-name>
+    <servlet-name>relatorioServer</servlet-name>
+    <servlet-class>Controller.relatorioServer</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>relatorioServer</servlet-name>
+    <url-pattern>/relatorioServer</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -29,6 +29,9 @@ Produtos produtos = new Produtos();
 <%
 HttpSession session_2 = request.getSession();
 JSONArray itensArray = (JSONArray) session.getAttribute("itens");
+
+String showModal = request.getParameter("showModal");
+String vendaIDParam = request.getParameter("vendaID");
 %>
 <html lang="pt-BR">
 <head>
@@ -308,7 +311,8 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 							<h4 class="display-7">Deseja finalizar a venda ?</h4>
 							<button type="button" class="btn btn-secondary"
 								data-bs-dismiss="modal">Não</button>
-							<button type="submit" class="btn btn-primary">Sim</button>
+							<button type="button" class="btn btn-primary" class="btn btn-primary" data-bs-toggle="modal"
+					                data-bs-target="#comprovanteVenda">Sim</button>
 
 						</div>
 
@@ -338,6 +342,21 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 			}
 			}
 			%>
+			 <div class="modal fade" tabindex="-1" id="comprovanteVenda">
+        <div class="modal-dialog" style="min-width: 90%; min-height: 90%; height: 90%;">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <!-- O iframe carrega o relatório via servlet passando o vendaID -->
+                    <iframe id="iframeRelatorio" src="exibirRelatorio?vendaID=<%= vendaIDParam != null ? vendaIDParam : "" %>" width="100%" height="100%" style="border: none;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <a type="button" class="btn btn-primary" onclick="document.getElementById('iframeRelatorio').contentWindow.print();">Imprimir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 		</form>
 
@@ -361,6 +380,7 @@ JSONArray itensArray = (JSONArray) session.getAttribute("itens");
 				</div>
 			</div>
 		</div>
+		
 	</main>
 
 
@@ -692,6 +712,31 @@ document.getElementById("carrinho").addEventListener("click", function(event) {
     };
 </script>
 
+<script>
+    $(document).ready(function(){
+        var showModal = '<%= request.getParameter("showModal") %>';
+        if (showModal === "true") {
+            $('#comprovanteVenda').modal('show');
+        }
+    });
+</script>
+
+  <script>
+        $(document).ready(function(){
+            var showModal = '<%= showModal %>';
+            var vendaID = '<%= vendaIDParam %>';
+            if (showModal === "true" && vendaID) {
+                // Atualiza o src do iframe para carregar o relatório correto
+                document.getElementById('iframeRelatorio').src = 'exibirRelatorio?vendaID=' + vendaID;
+
+                // Abre o modal
+                var comprovanteModal = new bootstrap.Modal(document.getElementById('comprovanteVenda'));
+                comprovanteModal.show();
+            } else if (showModal === "false") {
+                alert("Erro ao gerar o comprovante de venda.");
+            }
+        });
+    </script>
 
 
 	

@@ -244,7 +244,38 @@
 			$('#telefone').mask('(00) - 0000-0000');
 			$('#celular').mask('(00) - 00000-0000');
 			$('#cep').mask('00.000-000');
-			$('#cpf').mask('000.000.000-00');
+			$('#cnpj').mask('00.000.000/0000-00');
 		});
 	</script>
+	<script>
+$(document).ready(function() {
+    $("#cep").on("keypress", function(e) {
+        if (e.which == 13) {  // Verifica se a tecla pressionada é Enter
+            e.preventDefault(); // Previne o comportamento padrão de envio do formulário
+
+            var numCep = $("#cep").val().replace(".", "").replace("-", ""); // Remover formatação do CEP
+            var url = "https://viacep.com.br/ws/"+numCep+"/json";
+
+            console.log("CEP digitado: " + numCep);
+
+            $.ajax({
+                url: url,
+                type: "get",
+                dataType: "json",
+                success: function(dados) {
+                    console.log("Resposta da API:", dados);
+                    $("#estado").val(dados.uf);
+                    $("#cidade").val(dados.localidade);
+                    $("#endereco").val(dados.logradouro);
+                    $("#bairro").val(dados.bairro);
+                },
+                error: function(xhr, status, error) {
+                    console.log("Erro na solicitação AJAX:", error);
+                }
+            });
+        }
+    });
+});
+</script>
+
 </div>
