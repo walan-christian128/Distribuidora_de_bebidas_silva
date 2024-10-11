@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="teree" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="821918af-4984-4f98-bdfe-147eb5cf5edb">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<parameter name="ID_VENDA" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT distribuidora.tb_vendas.data_venda,
+	distribuidora.tb_vendas.total_venda,
+	distribuidora.tb_vendas.forma_pagamento,
+	distribuidora.tb_itensvendas.qtd,
+	distribuidora.tb_produtos.descricao,
+	distribuidora.tb_produtos.preco_de_venda
+FROM distribuidora.tb_itensvendas
+	INNER JOIN distribuidora.tb_vendas ON 
+	 distribuidora.tb_itensvendas.venda_id = distribuidora.tb_vendas.id 
+	INNER JOIN distribuidora.tb_produtos ON 
+	 distribuidora.tb_itensvendas.produto_id = distribuidora.tb_produtos.id
+	 where distribuidora.tb_vendas.id =   $P{ID_VENDA} ]]>
+	</queryString>
+	<field name="data_venda" class="java.time.LocalDateTime">
+		<property name="com.jaspersoft.studio.field.name" value="data_venda"/>
+		<property name="com.jaspersoft.studio.field.label" value="data_venda"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_vendas"/>
+	</field>
+	<field name="total_venda" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total_venda"/>
+		<property name="com.jaspersoft.studio.field.label" value="total_venda"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_vendas"/>
+	</field>
+	<field name="forma_pagamento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="forma_pagamento"/>
+		<property name="com.jaspersoft.studio.field.label" value="forma_pagamento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_vendas"/>
+	</field>
+	<field name="qtd" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="qtd"/>
+		<property name="com.jaspersoft.studio.field.label" value="qtd"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_itensvendas"/>
+	</field>
+	<field name="descricao" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="descricao"/>
+		<property name="com.jaspersoft.studio.field.label" value="descricao"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_produtos"/>
+	</field>
+	<field name="preco_de_venda" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="preco_de_venda"/>
+		<property name="com.jaspersoft.studio.field.label" value="preco_de_venda"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_produtos"/>
+	</field>
+	<group name="data_venda">
+		<groupExpression><![CDATA[$F{data_venda}]]></groupExpression>
+	</group>
+	<group name="total_venda">
+		<groupExpression><![CDATA[$F{total_venda}]]></groupExpression>
+	</group>
+	<group name="forma_pagamento">
+		<groupExpression><![CDATA[$F{forma_pagamento}]]></groupExpression>
+	</group>
+	<group name="qtd">
+		<groupExpression><![CDATA[$F{qtd}]]></groupExpression>
+	</group>
+	<group name="descricao">
+		<groupExpression><![CDATA[$F{descricao}]]></groupExpression>
+	</group>
+	<group name="preco_de_venda">
+		<groupExpression><![CDATA[$F{preco_de_venda}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="30" uuid="e67196b9-1951-4b5b-ad4f-139c432281e4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8bbec98a-7758-4a39-beae-e8db36863401"/>
+				</reportElement>
+				<text><![CDATA[data_venda]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="100" height="30" uuid="4dd3831a-8300-4717-950f-469c76ec3076">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ca6d983f-3890-4c56-8929-050395c3d5d8"/>
+				</reportElement>
+				<text><![CDATA[total_venda]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="100" height="30" uuid="7533cddf-3c70-47ee-a147-85c0eaa79589">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1a0ad4dc-feef-4669-b8f3-b4657558d00b"/>
+				</reportElement>
+				<text><![CDATA[forma_pagamento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="0" width="100" height="30" uuid="d35f82f0-3986-445a-8e2b-3db7851c81d9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a6a6465f-3a07-40ac-8d86-08f8e978c908"/>
+				</reportElement>
+				<text><![CDATA[qtd]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="10" width="100" height="30" uuid="dc439181-550a-442b-b0ec-a3fd033bbea1">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8bbec98a-7758-4a39-beae-e8db36863401"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{data_venda}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="10" width="100" height="30" uuid="d8eac409-24cb-4416-9d06-271ad84152b9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ca6d983f-3890-4c56-8929-050395c3d5d8"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{total_venda}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="10" width="100" height="30" uuid="4804b77c-57b4-401c-ad80-b3e2a7fbb8c8">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1a0ad4dc-feef-4669-b8f3-b4657558d00b"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{forma_pagamento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="10" width="80" height="30" uuid="4f12f526-d774-48ac-bc28-ebc061bf984e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a6a6465f-3a07-40ac-8d86-08f8e978c908"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{qtd}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

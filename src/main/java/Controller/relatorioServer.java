@@ -53,7 +53,7 @@ public class relatorioServer extends HttpServlet {
         try {
             // Gerar o relatório
             RelNotaVenda relatorio = new RelNotaVenda(empresa); // Substitua "sua_empresa" conforme necessário
-            JasperPrint jasperPrint = relatorio.gerarRelatorio("RelatoriosJasper/LojaTeree.jrxml", vendaID);
+            JasperPrint jasperPrint = relatorio.gerarRelatorio("RelatoriosJasper/teree.jrxml", vendaID);
             LOGGER.log(Level.INFO, "Relatório gerado para vendaID: " + vendaID);
 
             // Exportar para PDF
